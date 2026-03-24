@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente Ecocardiográfico Veterinario</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Módulo de Autenticación (Login/Registro) -->
+    <div id="authContainer" class="auth-overlay">
+        <div class="auth-card">
+            <div style="text-align:center; margin-bottom: 2rem;">
+                <span class="icon-heart" style="font-size:3rem;">🫀</span>
+                <h2 style="color:var(--primary-color); margin-top: 0.5rem;">Credenciales Clínicas</h2>
+                <p style="color:var(--text-muted); font-size:0.9rem;">Área de acceso restringido para especialistas</p>
+            </div>
+            
+            <div id="authNotice" class="hidden" style="background-color: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center;"></div>
+            
+            <!-- Login -->
+            <form id="loginForm" class="auth-form">
+                <div class="input-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; margin-top: 1rem;">Iniciar Sesión</button>
+                <p style="text-align:center; margin-top:1.5rem; font-size:0.9rem;">
+                    ¿Nuevo especialista? <span id="btn-show-register" style="color:var(--primary-color); cursor:pointer; font-weight:bold; text-decoration:underline;">Crear cuenta</span>
+                </p>
+            </form>
+
+            <!-- Registro -->
+            <form id="registerForm" class="auth-form hidden">
+                <div class="input-group">
+                    <label for="regNombre">Nombre (Ej. Dr. Martínez)</label>
+                    <input type="text" id="regNombre" required>
+                </div>
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label for="regColegiado">Nº Colegiado</label>
+                        <input type="text" id="regColegiado" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="regClinica">Clínica / Hospital</label>
+                        <input type="text" id="regClinica" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="regEmail">Email corporativo</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="input-group">
+                    <label for="regPassword">Contraseña (Mín. 6)</label>
+                    <input type="password" id="regPassword" minlength="6" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; margin-top: 1rem; background-color: #0b7a70;">Registrar Cuenta</button>
+                <p style="text-align:center; margin-top:1.5rem; font-size:0.9rem;">
+                    ¿Ya tienes usuario? <span id="btn-show-login" style="color:var(--primary-color); cursor:pointer; font-weight:bold; text-decoration:underline;">Entrar aquí</span>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Principal (Oculta hasta el login) -->
+    <div id="mainApp" class="hidden">
+        <header class="app-header">
+            <div class="header-content">
+                <span class="icon-heart">🫀</span>
+                <h1>Asistente Ecocardiográfico</h1>
+                <p class="subtitle">Análisis inteligente para tus pacientes caninos</p>
+            </div>
+            <div class="header-controls">
+                <span id="userGreeting" style="font-weight:600; margin-right:0.5rem; font-size:0.9rem;"></span>
+                <button id="btnTabWizard" class="btn-tab active">📝 Asistente</button>
+                <button id="btnTabKnowledge" class="btn-tab">🧠 Conocimiento (RAG)</button>
+                <select id="langSelector" style="padding: 0.4rem; border-radius: var(--radius); border: 1px solid var(--border-color); margin-right: 0.5rem; margin-left: 0.5rem;">
+                    <option value="es" selected>🇪🇸 ES</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="cat">💛 CAT</option>
+                </select>
+                <button id="btnLogout" class="btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.8rem; border-color:var(--danger-color); color:var(--danger-color);">Salir</button>
+            </div>
+        </header>
+
+        <main class="app-container">
+            <!-- Vista Asistente (Wizard) -->
+            <div id="viewWizard">
+                <!-- Progress Bar -->
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <form id="ecoForm">
+                <!-- Sección 1 -->
+                <section class="accordion-section" id="sec-1">
+                    <button type="button" class="accordion-header active">
+                        <h2>🐾 1. Datos del Paciente</h2>
+                        <span class="accordion-icon">🔻</span>
+                    </button>
+                    <div class="accordion-content open">
+                        <p class="section-greeting">¡Vamos a analizar a tu paciente! Introduce sus datos clínicos básicos.</p>
+                        <div class="grid-2">
+                            <div class="input-group">
+                                <label for="nombrePaciente">Nombre del paciente <span class="required">*</span></label>
+                                <input type="text" id="nombrePaciente" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="raza">Raza <span class="required">*</span></label>
+                                <input type="text" id="raza" list="razaList" placeholder="Escribe o selecciona..." required>
+                                <datalist id="razaList">
+                                    <!-- Dinámico Supabase -->
+                                </datalist>
+                            </div>
+                            <div class="input-group">
+                                <label for="peso">Peso (kg) <span class="required">*</span></label>
+                                <input type="number" step="0.1" id="peso" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="edad">Edad (años) <span class="required">*</span></label>
+                                <input type="number" step="0.1" id="edad" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="sexo">Sexo <span class="required">*</span></label>
+                                <select id="sexo" required>
+                                    <option value="" disabled selected>Selecciona...</option>
+                                    <option value="M">Macho</option>
+                                    <option value="MC">Macho castrado</option>
+                                    <option value="H">Hembra</option>
+                                    <option value="HC">Hembra castrada</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="soplo">Soplo</label>
+                                <select id="soplo">
+                                    <option value="0">No detectado</option>
+                                    <option value="1">Grado I</option>
+                                    <option value="2">Grado II</option>
+                                    <option value="3">Grado III</option>
+                                    <option value="4">Grado IV</option>
+                                    <option value="5">Grado V</option>
+                                    <option value="6">Grado VI</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="localizacionSoplo">Localización del soplo</label>
+                                <select id="localizacionSoplo">
+                                    <option value="">No aplica</option>
+                                    <option value="apical_izq">Apical izquierdo</option>
+                                    <option value="base_izq">Base izquierda</option>
+                                    <option value="tricuspide">Tricúspide</option>
+                                    <option value="difuso">Difuso</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="fc">Frecuencia Cardíaca (lpm)</label>
+                                <input type="number" id="fc">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección 2: Modo M -->
+                <section class="accordion-section" id="sec-2">
+                    <button type="button" class="accordion-header">
+                        <h2>📏 2. Medidas Modo M (mm)</h2>
+                        <span class="accordion-icon">🔻</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="grid-2">
+                            <div class="input-group"><label for="LVIDd">LVIDd</label><input type="number" step="0.1" id="LVIDd"></div>
+                            <div class="input-group"><label for="LVIDs">LVIDs</label><input type="number" step="0.1" id="LVIDs"></div>
+                            <div class="input-group"><label for="IVSd">IVSd</label><input type="number" step="0.1" id="IVSd"></div>
+                            <div class="input-group"><label for="IVSs">IVSs</label><input type="number" step="0.1" id="IVSs"></div>
+                            <div class="input-group"><label for="LVPWd">LVPWd</label><input type="number" step="0.1" id="LVPWd"></div>
+                            <div class="input-group"><label for="LVPWs">LVPWs</label><input type="number" step="0.1" id="LVPWs"></div>
+                            <div class="input-group"><label for="LA">LA</label><input type="number" step="0.1" id="LA"></div>
+                            <div class="input-group"><label for="Ao">Ao</label><input type="number" step="0.1" id="Ao"></div>
+                            <div class="input-group"><label for="EPSS">EPSS</label><input type="number" step="0.1" id="EPSS"></div>
+                            <div class="input-group"><label for="RVIDd">RVIDd</label><input type="number" step="0.1" id="RVIDd"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección 3: Doppler -->
+                <section class="accordion-section" id="sec-3">
+                    <button type="button" class="accordion-header">
+                        <h2>🌊 3. Doppler Espectral</h2>
+                        <span class="accordion-icon">🔻</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="grid-2">
+                            <div class="input-group"><label for="Vmax_Ao">Vmax Aórtica (m/s)</label><input type="number" step="0.01" id="Vmax_Ao"></div>
+                            <div class="input-group"><label for="Vmax_Pul">Vmax Pulmonar (m/s)</label><input type="number" step="0.01" id="Vmax_Pul"></div>
+                            <div class="input-group"><label for="E_mitral">Onda E Mitral (m/s)</label><input type="number" step="0.01" id="E_mitral"></div>
+                            <div class="input-group"><label for="A_mitral">Onda A Mitral (m/s)</label><input type="number" step="0.01" id="A_mitral"></div>
+                            <div class="input-group"><label for="VmaxRT">Vmax RT (m/s)</label><input type="number" step="0.01" id="VmaxRT"></div>
+                            <div class="input-group"><label for="e_prime">e' anillo mitral (cm/s)</label><input type="number" step="0.1" id="e_prime"></div>
+                            <div class="input-group"><label for="IVCT">IVCT (ms)</label><input type="number" id="IVCT"></div>
+                            <div class="input-group"><label for="ET">ET (ms)</label><input type="number" id="ET"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección 4: Hallazgos -->
+                <section class="accordion-section" id="sec-4">
+                    <button type="button" class="accordion-header">
+                        <h2>🔍 4. Hallazgos Cualitativos</h2>
+                        <span class="accordion-icon">🔻</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="grid-2">
+                            <div class="input-group">
+                                <label for="engrosamiento_mitral">Engrosamiento mitral</label>
+                                <select id="engrosamiento_mitral"><option value="0">No</option><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select>
+                            </div>
+                            <div class="input-group">
+                                <label for="jet_rm">Jet de regurgitación mitral</label>
+                                <select id="jet_rm"><option value="0">Ausente</option><option value="pequeno">Pequeño</option><option value="moderado">Moderado</option><option value="amplio">Amplio</option></select>
+                            </div>
+                            <div class="input-group">
+                                <label for="derrame_pericardico">Derrame Pericárdico</label>
+                                <select id="derrame_pericardico"><option value="0">No</option><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select>
+                            </div>
+                        </div>
+                        <div class="input-group full-width" style="margin-top: 20px;">
+                            <label>Otros hallazgos:</label>
+                            <div class="checkbox-grid">
+                                <label><input type="checkbox" id="prolapso_mitral"> Prolapso</label>
+                                <label><input type="checkbox" id="aplanamiento_septal"> Aplanamiento septal</label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección 5 -->
+                <section class="accordion-section" id="sec-5" style="border-top: 2px dashed var(--primary-color);">
+                    <button type="button" class="accordion-header">
+                        <h2>📝 5. Observaciones y Tratamiento Clínico Libre</h2>
+                        <span class="accordion-icon">🔻</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="input-group full-width">
+                            <textarea id="comentarios_libres" rows="4" placeholder="Ej: Iniciar tratamiento con Pimobendan 0.25mg/kg BID..." style="width:100%; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 1rem; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="actions">
+                    <button type="button" class="btn-secondary" id="btn-limpiar">Limpiar Formulario</button>
+                    <button type="submit" class="btn-primary" id="btn-generar" style="font-size: 1.1rem; padding: 1rem 2rem;">Generar Diagnóstico Asistido</button>
+                </div>
+            </form>
+            </div>
+
+            <!-- Vista Conocimiento (RAG) -->
+            <div id="viewKnowledge" class="hidden">
+                <div class="card-glass" style="padding:2rem;">
+                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom: 2rem;">
+                        <span style="font-size:3rem;">📚</span>
+                        <div>
+                            <h2 style="margin:0; color:var(--primary-color);">Centro de Consulta Inteligente (RAG)</h2>
+                            <p style="margin:0; color:var(--text-muted);">Consulta guías oficiales y literatura científica mediante IA</p>
+                        </div>
+                    </div>
+
+                    <div class="search-box" style="display:flex; gap:0.5rem; margin-bottom: 2rem;">
+                        <input type="text" id="ragSearchInput" placeholder="Ej: Traspaso ACVIM Estadio B2 a C, criterios de diagnóstico..." style="flex:1; padding:1rem; font-size:1.1rem; border-radius: var(--radius);">
+                        <button id="btnRagSearch" class="btn-primary">Consultar IA</button>
+                    </div>
+
+                    <!-- Resultados RAG -->
+                    <div id="ragResults" class="hidden">
+                        <div style="background:var(--secondary-color); padding: 1.5rem; border-radius:12px; border-left: 6px solid var(--primary-color);">
+                            <h4 style="margin-top:0;">🔍 Resultados encontrados:</h4>
+                            <div id="ragContent" style="font-size:1.05rem; line-height:1.6;">
+                                <!-- Snippets de Supabase match_conocimiento -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ragEmpty" style="text-align:center; padding: 4rem 2rem; border: 2px dashed var(--border-color); border-radius: var(--radius); color: var(--text-muted);">
+                        <p style="font-size:1.2rem;">Aún no hay documentos cargados en el repositorio RAG.</p>
+                        <p style="font-size:0.9rem;">Para empezar, activa el modo RAG en Supabase y sube las guías ACVIM/ECVIM.</p>
+                    </div>
+                </div>
+            </div>
+
+            <section id="informeFinal" class="hidden printable-section">
+                <div class="actions no-print" style="margin-bottom: 2rem; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <button type="button" class="btn-secondary" id="btn-cerrar-informe">Volver al Formulario</button>
+                    <div style="background:var(--secondary-color); padding: 0.5rem 1rem; border-radius: var(--radius); display: flex; align-items: center; gap: 0.5rem;">
+                        <label for="langImpresion" style="margin:0; font-weight:600;">Idioma:</label>
+                        <select id="langImpresion" style="width:auto;">
+                            <option value="es" selected>🇪🇸 Español</option>
+                            <option value="en">🇬🇧 English</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="cat">💛 Català</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-primary" id="btn-imprimir">🖨️ Crear PDF / Imprimir</button>
+                </div>
+                <div id="reporteContenido" class="report-paper"></div>
+            </section>
+        </main>
+
+        <footer class="app-footer no-print">
+            <p>Asistente de apoyo diagnóstico. No sustituye el criterio clínico veterinario.</p>
+        </footer>
+    </div>
+
+    <!-- Supabase SDK Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Logica Principal -->
+    <script src="app.js"></script>
+</body>
+</html>

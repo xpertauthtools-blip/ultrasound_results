@@ -1,328 +1,1144 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistente Ecocardiográfico Veterinario</title>
+    <title>XpertAuth - Tecnología para la Comunidad</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts - Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* Variables CSS */
+        :root {
+            /* Backgrounds */
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-tertiary: #141414;
+            
+            /* Text */
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            
+            /* Brand */
+            --brand-teal: #14B8A6;
+            --brand-blue: #3B82F6;
+            --brand-orange: #F59E0B;
+            
+            /* Spacing */
+            --space-md: 24px;
+            --space-xl: 48px;
+            --space-2xl: 64px;
+            --space-3xl: 96px;
+            --space-4xl: 128px;
+            --space-5xl: 160px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+        
+        /* Typography */
+        .text-hero {
+            font-size: 80px;
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+        }
+        
+        .text-display {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        
+        .text-h1 {
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+        
+        .text-h2 {
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        .text-body-lg {
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        .text-body {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        /* Responsive Typography */
+        @media (max-width: 1024px) {
+            .text-hero { font-size: 56px; }
+            .text-display { font-size: 40px; }
+        }
+        
+        @media (max-width: 768px) {
+            .text-hero { font-size: 48px; }
+            .text-display { font-size: 36px; }
+            .text-h1 { font-size: 32px; }
+            .text-h2 { font-size: 24px; }
+        }
+        
+        /* Gradients */
+        .gradient-brand {
+            background: linear-gradient(135deg, #3B82F6 0%, #14B8A6 100%);
+        }
+        
+        .gradient-teal {
+            background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+        }
+        
+        .gradient-seniors {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #3B82F6 0%, #14B8A6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #14B8A6 100%);
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(20, 184, 166, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #FFFFFF;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 16px;
+            font-weight: 700;
+            padding: 14px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--brand-teal);
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--brand-teal);
+            font-size: 16px;
+            font-weight: 700;
+            padding: 16px 32px;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-ghost:hover {
+            color: #0D9488;
+        }
+        
+        /* Badge */
+        .badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(59, 130, 246, 0.2);
+            color: #60A5FA;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .badge-orange {
+            background: rgba(245, 158, 11, 0.2);
+            color: #FCD34D;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .badge-teal {
+            background: rgba(20, 184, 166, 0.2);
+            color: #5EEAD4;
+            border: 1px solid rgba(20, 184, 166, 0.3);
+        }
+        
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        
+        /* Hero */
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        
+        /* Section spacing */
+        .section {
+            padding: 160px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 1024px) {
+            .section { padding: 96px 24px; }
+        }
+        
+        @media (max-width: 768px) {
+            .section { padding: 64px 24px; }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0, 0, 0.2, 1) forwards;
+        }
+        
+        .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-item:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-item:nth-child(3) { animation-delay: 0.3s; }
+        
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        /* Mobile menu */
+        .mobile-menu {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 70px);
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(10px);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        /* Input */
+        .input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 14px 16px;
+            color: #FFFFFF;
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
+            width: 100%;
+            transition: border-color 0.2s ease;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: var(--brand-teal);
+        }
+        
+        .input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Seniors highlight */
+        .seniors-highlight {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid var(--brand-orange);
+            position: relative;
+        }
+        
+        .seniors-highlight::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            border-radius: 12px;
+            opacity: 0.2;
+            filter: blur(20px);
+            z-index: -1;
+        }
+        
+        /* Image hover effect */
+        .image-container {
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .image-container img {
+            transition: transform 0.3s ease;
+        }
+        
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-
-    <!-- Módulo de Autenticación (Login/Registro) -->
-    <div id="authContainer" class="auth-overlay">
-        <div class="auth-card">
-            <div style="text-align:center; margin-bottom: 2rem;">
-                <span class="icon-heart" style="font-size:3rem;">🫀</span>
-                <h2 style="color:var(--primary-color); margin-top: 0.5rem;">Credenciales Clínicas</h2>
-                <p style="color:var(--text-muted); font-size:0.9rem;">Área de acceso restringido para especialistas</p>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2">
+                <img src="images/Logo_XpertAuth_2.png" alt="XpertAuth" class="h-10">
+            </a>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#servicios" class="text-body text-white/80 hover:text-white transition-colors">Servicios</a>
+                <a href="#asociacion" class="text-body text-white/80 hover:text-white transition-colors">Asociación</a>
+                <a href="#blog" class="text-body text-white/80 hover:text-white transition-colors">Blog</a>
+                <a href="#fundador" class="text-body text-white/80 hover:text-white transition-colors">Quién Soy</a>
             </div>
             
-            <div id="authNotice" class="hidden" style="background-color: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.9rem; text-align: center;"></div>
+            <!-- CTA Button Desktop -->
+            <div class="hidden md:block">
+                <a href="#socio-fundador" class="btn-primary">Hazte Socio Fundador</a>
+            </div>
             
-            <!-- Login -->
-            <form id="loginForm" class="auth-form">
-                <div class="input-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" required>
-                </div>
-                <div class="input-group">
-                    <label for="loginPassword">Contraseña</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn-primary" style="width:100%; margin-top: 1rem;">Iniciar Sesión</button>
-                <p style="text-align:center; margin-top:1.5rem; font-size:0.9rem;">
-                    ¿Nuevo especialista? <span id="btn-show-register" style="color:var(--primary-color); cursor:pointer; font-weight:bold; text-decoration:underline;">Crear cuenta</span>
-                </p>
-            </form>
-
-            <!-- Registro -->
-            <form id="registerForm" class="auth-form hidden">
-                <div class="input-group">
-                    <label for="regNombre">Nombre (Ej. Dr. Martínez)</label>
-                    <input type="text" id="regNombre" required>
-                </div>
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label for="regColegiado">Nº Colegiado</label>
-                        <input type="text" id="regColegiado" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="regClinica">Clínica / Hospital</label>
-                        <input type="text" id="regClinica" required>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="regEmail">Email corporativo</label>
-                    <input type="email" id="regEmail" required>
-                </div>
-                <div class="input-group">
-                    <label for="regPassword">Contraseña (Mín. 6)</label>
-                    <input type="password" id="regPassword" minlength="6" required>
-                </div>
-                <button type="submit" class="btn-primary" style="width:100%; margin-top: 1rem; background-color: #0b7a70;">Registrar Cuenta</button>
-                <p style="text-align:center; margin-top:1.5rem; font-size:0.9rem;">
-                    ¿Ya tienes usuario? <span id="btn-show-login" style="color:var(--primary-color); cursor:pointer; font-weight:bold; text-decoration:underline;">Entrar aquí</span>
-                </p>
-            </form>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-white">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu">
+        <div class="flex flex-col items-center justify-center h-full gap-8">
+            <a href="#servicios" class="text-h2 text-white/80 hover:text-white transition-colors mobile-menu-link">Servicios</a>
+            <a href="#asociacion" class="text-h2 text-white/80 hover:text-white transition-colors mobile-menu-link">Asociación</a>
+            <a href="#blog" class="text-h2 text-white/80 hover:text-white transition-colors mobile-menu-link">Blog</a>
+            <a href="#fundador" class="text-h2 text-white/80 hover:text-white transition-colors mobile-menu-link">Quién Soy</a>
+            <a href="#socio-fundador" class="btn-primary mobile-menu-link">Hazte Socio Fundador</a>
         </div>
     </div>
-
-    <!-- App Principal (Oculta hasta el login) -->
-    <div id="mainApp" class="hidden">
-        <header class="app-header">
-            <div class="header-content">
-                <span class="icon-heart">🫀</span>
-                <h1>Asistente Ecocardiográfico</h1>
-                <p class="subtitle">Análisis inteligente para tus pacientes caninos</p>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="images/hero-background.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content max-w-5xl mx-auto px-6 text-center">
+            <h1 class="text-hero gradient-text mb-6 fade-in-up">
+                Tecnología que Simplifica, Comunidad que Apoya
+            </h1>
+            
+            <p class="text-h2 text-white/90 mb-12 max-w-3xl mx-auto fade-in-up" style="animation-delay: 0.2s;">
+                Unimos experiencia del sector con inteligencia artificial para crear soluciones accesibles. Sin ánimo de lucro, con vocación de servicio.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12 fade-in-up" style="animation-delay: 0.4s;">
+                <a href="#socio-fundador" class="btn-primary">Únete como Socio Fundador</a>
+                <a href="#servicios" class="btn-secondary">Conoce los Servicios</a>
             </div>
-            <div class="header-controls">
-                <span id="userGreeting" style="font-weight:600; margin-right:0.5rem; font-size:0.9rem;"></span>
-                <button id="btnTabWizard" class="btn-tab active">📝 Asistente</button>
-                <button id="btnTabKnowledge" class="btn-tab">🧠 Conocimiento (RAG)</button>
-                <select id="langSelector" style="padding: 0.4rem; border-radius: var(--radius); border: 1px solid var(--border-color); margin-right: 0.5rem; margin-left: 0.5rem;">
-                    <option value="es" selected>🇪🇸 ES</option>
-                    <option value="en">🇬🇧 EN</option>
-                    <option value="fr">🇫🇷 FR</option>
-                    <option value="de">🇩🇪 DE</option>
-                    <option value="cat">💛 CAT</option>
-                </select>
-                <button id="btnLogout" class="btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.8rem; border-color:var(--danger-color); color:var(--danger-color);">Salir</button>
-            </div>
-        </header>
-
-        <main class="app-container">
-            <!-- Vista Asistente (Wizard) -->
-            <div id="viewWizard">
-                <!-- Progress Bar -->
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progressBar"></div>
+            
+            <!-- Association Badge -->
+            <div class="glass inline-block px-6 py-4 fade-in-up" style="animation-delay: 0.6s;">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-teal-400"></i>
+                    <span class="text-body-lg">Asociación en Constitución · Sin Ánimo de Lucro</span>
                 </div>
-
-                <form id="ecoForm">
-                <!-- Sección 1 -->
-                <section class="accordion-section" id="sec-1">
-                    <button type="button" class="accordion-header active">
-                        <h2>🐾 1. Datos del Paciente</h2>
-                        <span class="accordion-icon">🔻</span>
-                    </button>
-                    <div class="accordion-content open">
-                        <p class="section-greeting">¡Vamos a analizar a tu paciente! Introduce sus datos clínicos básicos.</p>
-                        <div class="grid-2">
-                            <div class="input-group">
-                                <label for="nombrePaciente">Nombre del paciente <span class="required">*</span></label>
-                                <input type="text" id="nombrePaciente" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="raza">Raza <span class="required">*</span></label>
-                                <input type="text" id="raza" list="razaList" placeholder="Escribe o selecciona..." required>
-                                <datalist id="razaList">
-                                    <!-- Dinámico Supabase -->
-                                </datalist>
-                            </div>
-                            <div class="input-group">
-                                <label for="peso">Peso (kg) <span class="required">*</span></label>
-                                <input type="number" step="0.1" id="peso" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="edad">Edad (años) <span class="required">*</span></label>
-                                <input type="number" step="0.1" id="edad" required>
-                            </div>
-                            <div class="input-group">
-                                <label for="sexo">Sexo <span class="required">*</span></label>
-                                <select id="sexo" required>
-                                    <option value="" disabled selected>Selecciona...</option>
-                                    <option value="M">Macho</option>
-                                    <option value="MC">Macho castrado</option>
-                                    <option value="H">Hembra</option>
-                                    <option value="HC">Hembra castrada</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label for="soplo">Soplo</label>
-                                <select id="soplo">
-                                    <option value="0">No detectado</option>
-                                    <option value="1">Grado I</option>
-                                    <option value="2">Grado II</option>
-                                    <option value="3">Grado III</option>
-                                    <option value="4">Grado IV</option>
-                                    <option value="5">Grado V</option>
-                                    <option value="6">Grado VI</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label for="localizacionSoplo">Localización del soplo</label>
-                                <select id="localizacionSoplo">
-                                    <option value="">No aplica</option>
-                                    <option value="apical_izq">Apical izquierdo</option>
-                                    <option value="base_izq">Base izquierda</option>
-                                    <option value="tricuspide">Tricúspide</option>
-                                    <option value="difuso">Difuso</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label for="fc">Frecuencia Cardíaca (lpm)</label>
-                                <input type="number" id="fc">
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Sección 2: Modo M -->
-                <section class="accordion-section" id="sec-2">
-                    <button type="button" class="accordion-header">
-                        <h2>📏 2. Medidas Modo M (mm)</h2>
-                        <span class="accordion-icon">🔻</span>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="grid-2">
-                            <div class="input-group"><label for="LVIDd">LVIDd</label><input type="number" step="0.1" id="LVIDd"></div>
-                            <div class="input-group"><label for="LVIDs">LVIDs</label><input type="number" step="0.1" id="LVIDs"></div>
-                            <div class="input-group"><label for="IVSd">IVSd</label><input type="number" step="0.1" id="IVSd"></div>
-                            <div class="input-group"><label for="IVSs">IVSs</label><input type="number" step="0.1" id="IVSs"></div>
-                            <div class="input-group"><label for="LVPWd">LVPWd</label><input type="number" step="0.1" id="LVPWd"></div>
-                            <div class="input-group"><label for="LVPWs">LVPWs</label><input type="number" step="0.1" id="LVPWs"></div>
-                            <div class="input-group"><label for="LA">LA</label><input type="number" step="0.1" id="LA"></div>
-                            <div class="input-group"><label for="Ao">Ao</label><input type="number" step="0.1" id="Ao"></div>
-                            <div class="input-group"><label for="EPSS">EPSS</label><input type="number" step="0.1" id="EPSS"></div>
-                            <div class="input-group"><label for="RVIDd">RVIDd</label><input type="number" step="0.1" id="RVIDd"></div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Sección 3: Doppler -->
-                <section class="accordion-section" id="sec-3">
-                    <button type="button" class="accordion-header">
-                        <h2>🌊 3. Doppler Espectral</h2>
-                        <span class="accordion-icon">🔻</span>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="grid-2">
-                            <div class="input-group"><label for="Vmax_Ao">Vmax Aórtica (m/s)</label><input type="number" step="0.01" id="Vmax_Ao"></div>
-                            <div class="input-group"><label for="Vmax_Pul">Vmax Pulmonar (m/s)</label><input type="number" step="0.01" id="Vmax_Pul"></div>
-                            <div class="input-group"><label for="E_mitral">Onda E Mitral (m/s)</label><input type="number" step="0.01" id="E_mitral"></div>
-                            <div class="input-group"><label for="A_mitral">Onda A Mitral (m/s)</label><input type="number" step="0.01" id="A_mitral"></div>
-                            <div class="input-group"><label for="VmaxRT">Vmax RT (m/s)</label><input type="number" step="0.01" id="VmaxRT"></div>
-                            <div class="input-group"><label for="e_prime">e' anillo mitral (cm/s)</label><input type="number" step="0.1" id="e_prime"></div>
-                            <div class="input-group"><label for="IVCT">IVCT (ms)</label><input type="number" id="IVCT"></div>
-                            <div class="input-group"><label for="ET">ET (ms)</label><input type="number" id="ET"></div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Sección 4: Hallazgos -->
-                <section class="accordion-section" id="sec-4">
-                    <button type="button" class="accordion-header">
-                        <h2>🔍 4. Hallazgos Cualitativos</h2>
-                        <span class="accordion-icon">🔻</span>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="grid-2">
-                            <div class="input-group">
-                                <label for="engrosamiento_mitral">Engrosamiento mitral</label>
-                                <select id="engrosamiento_mitral"><option value="0">No</option><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select>
-                            </div>
-                            <div class="input-group">
-                                <label for="jet_rm">Jet de regurgitación mitral</label>
-                                <select id="jet_rm"><option value="0">Ausente</option><option value="pequeno">Pequeño</option><option value="moderado">Moderado</option><option value="amplio">Amplio</option></select>
-                            </div>
-                            <div class="input-group">
-                                <label for="derrame_pericardico">Derrame Pericárdico</label>
-                                <select id="derrame_pericardico"><option value="0">No</option><option value="leve">Leve</option><option value="moderado">Moderado</option><option value="severo">Severo</option></select>
-                            </div>
-                        </div>
-                        <div class="input-group full-width" style="margin-top: 20px;">
-                            <label>Otros hallazgos:</label>
-                            <div class="checkbox-grid">
-                                <label><input type="checkbox" id="prolapso_mitral"> Prolapso</label>
-                                <label><input type="checkbox" id="aplanamiento_septal"> Aplanamiento septal</label>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Sección 5 -->
-                <section class="accordion-section" id="sec-5" style="border-top: 2px dashed var(--primary-color);">
-                    <button type="button" class="accordion-header">
-                        <h2>📝 5. Observaciones y Tratamiento Clínico Libre</h2>
-                        <span class="accordion-icon">🔻</span>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="input-group full-width">
-                            <textarea id="comentarios_libres" rows="4" placeholder="Ej: Iniciar tratamiento con Pimobendan 0.25mg/kg BID..." style="width:100%; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 1rem; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <div class="actions">
-                    <button type="button" class="btn-secondary" id="btn-limpiar">Limpiar Formulario</button>
-                    <button type="submit" class="btn-primary" id="btn-generar" style="font-size: 1.1rem; padding: 1rem 2rem;">Generar Diagnóstico Asistido</button>
-                </div>
-            </form>
             </div>
-
-            <!-- Vista Conocimiento (RAG) -->
-            <div id="viewKnowledge" class="hidden">
-                <div class="card-glass" style="padding:2rem;">
-                    <div style="display:flex; align-items:center; gap:1rem; margin-bottom: 2rem;">
-                        <span style="font-size:3rem;">📚</span>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <i data-lucide="chevron-down" class="w-8 h-8 text-white/60"></i>
+        </div>
+    </section>
+    
+    <!-- Estado Actual Banner -->
+    <section style="background: var(--bg-secondary); border-left: 4px solid var(--brand-teal);">
+        <div class="section">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-start gap-4 mb-8">
+                    <i data-lucide="clipboard-list" class="w-8 h-8 text-teal-400 mt-1"></i>
+                    <div>
+                        <h2 class="text-h1 mb-4">Estamos en Construcción</h2>
+                        <p class="text-body-lg text-white/80 mb-8">
+                            XpertAuth está dando sus primeros pasos. Mientras consolidamos la asociación, ya estamos trabajando para ti:
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-12">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-teal-400 mt-1 flex-shrink-0"></i>
                         <div>
-                            <h2 style="margin:0; color:var(--primary-color);">Centro de Consulta Inteligente (RAG)</h2>
-                            <p style="margin:0; color:var(--text-muted);">Consulta guías oficiales y literatura científica mediante IA</p>
+                            <h3 class="text-body-lg font-bold mb-1">Publicamos Blog</h3>
+                            <p class="text-body text-white/70">Artículos sobre transporte, IA y tecnología para mayores</p>
                         </div>
                     </div>
-
-                    <div class="search-box" style="display:flex; gap:0.5rem; margin-bottom: 2rem;">
-                        <input type="text" id="ragSearchInput" placeholder="Ej: Traspaso ACVIM Estadio B2 a C, criterios de diagnóstico..." style="flex:1; padding:1rem; font-size:1.1rem; border-radius: var(--radius);">
-                        <button id="btnRagSearch" class="btn-primary">Consultar IA</button>
-                    </div>
-
-                    <!-- Resultados RAG -->
-                    <div id="ragResults" class="hidden">
-                        <div style="background:var(--secondary-color); padding: 1.5rem; border-radius:12px; border-left: 6px solid var(--primary-color);">
-                            <h4 style="margin-top:0;">🔍 Resultados encontrados:</h4>
-                            <div id="ragContent" style="font-size:1.05rem; line-height:1.6;">
-                                <!-- Snippets de Supabase match_conocimiento -->
-                            </div>
+                    
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <h3 class="text-body-lg font-bold mb-1">Desarrollamos IA</h3>
+                            <p class="text-body text-white/70">Agentes inteligentes para automatizar procesos</p>
                         </div>
                     </div>
-
-                    <div id="ragEmpty" style="text-align:center; padding: 4rem 2rem; border: 2px dashed var(--border-color); border-radius: var(--radius); color: var(--text-muted);">
-                        <p style="font-size:1.2rem;">Aún no hay documentos cargados en el repositorio RAG.</p>
-                        <p style="font-size:0.9rem;">Para empezar, activa el modo RAG en Supabase y sube las guías ACVIM/ECVIM.</p>
+                    
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <div>
+                            <h3 class="text-body-lg font-bold mb-1">Preparamos Formaciones</h3>
+                            <p class="text-body text-white/70">Talleres presenciales para mayores de 55 años</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Founding Member CTA -->
+                <div class="glass p-8 max-w-2xl">
+                    <h3 class="text-h2 mb-4">¿Quieres Ser Socio Fundador?</h3>
+                    <p class="text-body-lg text-white/80 mb-6">
+                        Únete a los primeros 100 miembros y ayúdanos a construir esta comunidad desde el inicio.
+                    </p>
+                    <form id="founder-form" class="flex flex-col sm:flex-row gap-3">
+                        <input type="email" placeholder="tu@email.com" class="input flex-1" required>
+                        <button type="submit" class="btn-primary whitespace-nowrap">¡Me Apunto!</button>
+                    </form>
+                    <p class="text-sm text-white/60 mt-3 flex items-center gap-2">
+                        <i data-lucide="heart" class="w-4 h-4 text-orange-400"></i>
+                        Los primeros 100 tendrán condiciones especiales
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Por Qué XpertAuth -->
+    <section class="section">
+        <div class="text-center mb-16">
+            <h2 class="text-display mb-4">¿Por Qué XpertAuth?</h2>
+            <p class="text-body-lg text-white/80 max-w-2xl mx-auto">
+                Tres pilares que nos hacen diferentes y cercanos a ti
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-12">
+            <!-- Pilar 1 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-500/20 mb-6">
+                    <i data-lucide="shield-check" class="w-10 h-10 text-blue-400"></i>
+                </div>
+                <h3 class="text-h2 mb-4">Sin Ánimo de Lucro</h3>
+                <div class="space-y-3 text-body-lg text-white/80">
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Asociación sin ánimo de lucro</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Cargos directivos no remunerados</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Excedentes al servicio comunitario</span>
                     </div>
                 </div>
             </div>
-
-            <section id="informeFinal" class="hidden printable-section">
-                <div class="actions no-print" style="margin-bottom: 2rem; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                    <button type="button" class="btn-secondary" id="btn-cerrar-informe">Volver al Formulario</button>
-                    <div style="background:var(--secondary-color); padding: 0.5rem 1rem; border-radius: var(--radius); display: flex; align-items: center; gap: 0.5rem;">
-                        <label for="langImpresion" style="margin:0; font-weight:600;">Idioma:</label>
-                        <select id="langImpresion" style="width:auto;">
-                            <option value="es" selected>🇪🇸 Español</option>
-                            <option value="en">🇬🇧 English</option>
-                            <option value="fr">🇫🇷 Français</option>
-                            <option value="de">🇩🇪 Deutsch</option>
-                            <option value="cat">💛 Català</option>
-                        </select>
-                    </div>
-                    <button type="button" class="btn-primary" id="btn-imprimir">🖨️ Crear PDF / Imprimir</button>
+            
+            <!-- Pilar 2 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-teal-500/20 mb-6">
+                    <i data-lucide="cpu" class="w-10 h-10 text-teal-400"></i>
                 </div>
-                <div id="reporteContenido" class="report-paper"></div>
-            </section>
-        </main>
-
-        <footer class="app-footer no-print">
-            <p>Asistente de apoyo diagnóstico. No sustituye el criterio clínico veterinario.</p>
-        </footer>
-    </div>
-
-    <!-- Supabase SDK Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Logica Principal -->
-    <script src="app.js"></script>
+                <h3 class="text-h2 mb-4">Experiencia + IA</h3>
+                <div class="space-y-3 text-body-lg text-white/80">
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>30 años de experiencia sectorial</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Agentes IA que trabajan 24/7</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Automatización inteligente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pilar 3 -->
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-orange-500/20 mb-6">
+                    <i data-lucide="heart" class="w-10 h-10 text-orange-400"></i>
+                </div>
+                <h3 class="text-h2 mb-4">Trato Cercano</h3>
+                <div class="space-y-3 text-body-lg text-white/80">
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Lenguaje claro y accesible</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Acompañamiento personalizado</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Objetivo: Tu tranquilidad</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Servicios Section -->
+    <section id="servicios" style="background: var(--bg-secondary);">
+        <div class="section">
+            <div class="text-center mb-16">
+                <h2 class="text-display mb-4">Nuestros Servicios</h2>
+                <p class="text-body-lg text-white/80 max-w-2xl mx-auto">
+                    Soluciones especializadas que combinan conocimiento sectorial e inteligencia artificial
+                </p>
+            </div>
+            
+            <!-- Servicio 1: Transporte -->
+            <div class="grid md:grid-cols-2 gap-12 items-center mb-24">
+                <div class="image-container order-2 md:order-1">
+                    <img src="images/servicio-transporte-especial.png" alt="Transporte Especial" class="w-full rounded-lg">
+                </div>
+                <div class="order-1 md:order-2">
+                    <span class="badge mb-4">Próximamente</span>
+                    <h3 class="text-h1 mb-4">
+                        <i data-lucide="truck" class="inline-block w-10 h-10 mr-2 text-teal-400"></i>
+                        Transporte Especial
+                    </h3>
+                    <p class="text-body-lg text-white/80 mb-6">
+                        Consultoría especializada en normativa de transporte especial (DGT/SCT). Simplificamos lo complejo con agentes IA que te guían paso a paso.
+                    </p>
+                    <ul class="space-y-3 mb-6 text-body-lg text-white/80">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                            <span>Análisis automatizado de normativa DGT/SCT</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                            <span>Tramitación de autorizaciones especiales</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                            <span>Asistente IA disponible 24/7</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="btn-ghost">
+                        Ver Servicios de Transporte
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Servicio 2: IA a Tu Medida -->
+            <div class="grid md:grid-cols-2 gap-12 items-center mb-24">
+                <div class="image-container">
+                    <img src="images/servicio-ia-dashboard.png" alt="IA a Tu Medida" class="w-full rounded-lg">
+                </div>
+                <div>
+                    <span class="badge badge-teal mb-4">Próximamente</span>
+                    <h3 class="text-h1 mb-4">
+                        <i data-lucide="cpu" class="inline-block w-10 h-10 mr-2 text-blue-400"></i>
+                        IA a Tu Medida
+                    </h3>
+                    <p class="text-body-lg text-white/80 mb-6">
+                        Desarrollamos agentes de inteligencia artificial personalizados para automatizar procesos de tu negocio. Desde atención al cliente hasta análisis de datos.
+                    </p>
+                    <ul class="space-y-3 mb-6 text-body-lg text-white/80">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 mt-1 flex-shrink-0"></i>
+                            <span>Automatización de tareas repetitivas</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 mt-1 flex-shrink-0"></i>
+                            <span>Agentes conversacionales inteligentes</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 mt-1 flex-shrink-0"></i>
+                            <span>Análisis predictivo y toma de decisiones</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="btn-ghost" style="color: var(--brand-blue);">
+                        Descubre la IA
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Servicio 3: Formación Seniors (Destacado) -->
+            <div class="seniors-highlight rounded-xl p-8 md:p-12">
+                <div class="flex items-start gap-3 mb-6">
+                    <i data-lucide="heart" class="w-10 h-10 text-orange-400 mt-1"></i>
+                    <div>
+                        <span class="badge badge-orange mb-3">SIEMPRE GRATIS</span>
+                        <h3 class="text-h1 mb-2">Formación para Mayores de 55 Años</h3>
+                        <p class="text-body-lg text-white/80">
+                            Talleres presenciales en Girona para acercar la inteligencia artificial a tu vida cotidiana. Sin coste alguno, porque creemos en la inclusión digital.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="image-container">
+                        <img src="images/formacion-seniors-tablet.png" alt="Formación Mayores" class="w-full rounded-lg">
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="check-circle" class="w-6 h-6 text-orange-400 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="text-body-lg font-bold mb-1">IA en la Vida Cotidiana</h4>
+                                <p class="text-body text-white/70">Aprende a usar herramientas de IA para el día a día</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="check-circle" class="w-6 h-6 text-orange-400 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="text-body-lg font-bold mb-1">Presencial en Girona</h4>
+                                <p class="text-body text-white/70">Grupos reducidos con atención personalizada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="check-circle" class="w-6 h-6 text-orange-400 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="text-body-lg font-bold mb-1">100% Gratuito</h4>
+                                <p class="text-body text-white/70">Nuestro compromiso con la comunidad senior</p>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-primary gradient-seniors inline-block mt-4">
+                            Inscríbete Gratis
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Modelo Asociación -->
+    <section id="asociacion" class="section">
+        <div class="text-center mb-16">
+            <h2 class="text-display mb-4">Modelo de Asociación</h2>
+            <p class="text-body-lg text-white/80 max-w-2xl mx-auto">
+                Cuotas simbólicas que solo cubren gastos. Todo lo demás va a la comunidad.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+            <!-- Plan Mensual -->
+            <div class="glass p-8 rounded-xl">
+                <h3 class="text-h2 mb-2">Mensual</h3>
+                <div class="text-display gradient-text mb-6">5€<span class="text-body-lg text-white/60">/mes</span></div>
+                <ul class="space-y-3 mb-8 text-body-lg text-white/80">
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Acceso a todos los servicios</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Asistencia prioritaria</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Participación en decisiones</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Descuentos en formaciones</span>
+                    </li>
+                </ul>
+                <button class="btn-secondary w-full">Próximamente Disponible</button>
+            </div>
+            
+            <!-- Plan Anual -->
+            <div class="glass p-8 rounded-xl border-2 border-teal-500/50">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-h2">Anual</h3>
+                    <span class="badge badge-teal">Ahorra 16%</span>
+                </div>
+                <div class="text-display gradient-text mb-6">50€<span class="text-body-lg text-white/60">/año</span></div>
+                <ul class="space-y-3 mb-8 text-body-lg text-white/80">
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Todo lo del plan mensual</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>2 meses gratis</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Consulta gratuita anual</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-teal-400 mt-1 flex-shrink-0"></i>
+                        <span>Pack bienvenida exclusivo</span>
+                    </li>
+                </ul>
+                <button class="btn-primary w-full">Próximamente Disponible</button>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <p class="text-body text-white/60 mb-8">
+                * Solo cubrimos gastos de desplazamiento y gestión. Sin salarios directivos.
+            </p>
+            
+            <div class="glass p-8 max-w-2xl mx-auto">
+                <h3 class="text-h2 mb-4">Hazte Socio Fundador Ahora</h3>
+                <p class="text-body-lg text-white/80 mb-6">
+                    Los primeros 100 socios tendrán condiciones especiales y reconocimiento como fundadores.
+                </p>
+                <a href="#socio-fundador" class="btn-primary">Quiero Ser Fundador</a>
+                <p class="text-body text-orange-400 mt-4 flex items-center justify-center gap-2">
+                    <i data-lucide="heart" class="w-5 h-5"></i>
+                    100% de los excedentes se destinan a formación gratuita para mayores
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Quién Está Detrás -->
+    <section id="fundador" style="background: var(--bg-secondary);">
+        <div class="section">
+            <div class="text-center mb-16">
+                <h2 class="text-display mb-4">¿Quién Está Detrás?</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+                <div class="image-container mx-auto">
+                    <img src="images/avatar-fundador.png" alt="José Luis Echezarreta" class="w-full max-w-md rounded-lg">
+                    <div class="glass p-4 text-center mt-4">
+                        <p class="text-body font-bold">Cargo NO remunerado</p>
+                        <p class="text-sm text-white/60">Sin ánimo de lucro real</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-h1 mb-6">José Luis Echezarreta</h3>
+                    
+                    <div class="space-y-6 text-body-lg text-white/80">
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="briefcase" class="w-6 h-6 text-teal-400 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="font-bold mb-1">30+ Años de Experiencia Sectorial</h4>
+                                <p>18 años en Aduanas y Comercio Exterior + 17 años en Transporte Especial y Logística</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="cpu" class="w-6 h-6 text-blue-400 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="font-bold mb-1">2023-2026: Formación Intensiva en IA</h4>
+                                <p>Especialización en herramientas de inteligencia artificial y desarrollo de agentes autónomos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="heart" class="w-6 h-6 text-orange-400 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="font-bold mb-1">2026: XpertAuth - Devolver a la Comunidad</h4>
+                                <p>Creación de una asociación sin ánimo de lucro para democratizar el acceso a tecnología y conocimiento</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass p-6 mt-8">
+                        <p class="text-body-lg italic text-white/90">
+                            "He pasado tres décadas ayudando a empresas a navegar la complejidad normativa. Ahora quiero usar la IA para hacer ese conocimiento accesible a todos, especialmente a quienes más lo necesitan. Sin ánimo de lucro, porque no se trata de ganar dinero, sino de construir comunidad."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Blog Preview -->
+    <section id="blog" class="section">
+        <div class="text-center mb-16">
+            <h2 class="text-display mb-4">Últimas del Blog</h2>
+            <p class="text-body-lg text-white/80 max-w-2xl mx-auto">
+                Artículos sobre transporte, IA y tecnología accesible
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8 mb-12">
+            <!-- Blog Post 1 -->
+            <article class="group cursor-pointer">
+                <div class="image-container mb-4">
+                    <img src="images/blog-transporte-normativa.png" alt="Transporte Normativa" class="w-full rounded-lg">
+                </div>
+                <span class="badge mb-3">Transporte</span>
+                <h3 class="text-h2 mb-3 group-hover:text-teal-400 transition-colors">
+                    Cambios en la Normativa de Transporte Especial 2026
+                </h3>
+                <p class="text-body text-white/70 mb-4">
+                    Analizamos las nuevas regulaciones de la DGT para transportes especiales y cómo afectan a tu operativa diaria.
+                </p>
+                <div class="flex items-center gap-2 text-sm text-white/60">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span>Generado con IA · 5 min lectura</span>
+                </div>
+            </article>
+            
+            <!-- Blog Post 2 -->
+            <article class="group cursor-pointer">
+                <div class="image-container mb-4">
+                    <img src="images/blog-ia-automatizacion.png" alt="IA Automatización" class="w-full rounded-lg">
+                </div>
+                <span class="badge badge-teal mb-3">Inteligencia Artificial</span>
+                <h3 class="text-h2 mb-3 group-hover:text-teal-400 transition-colors">
+                    Automatiza Tu Negocio con Agentes IA: Guía Práctica
+                </h3>
+                <p class="text-body text-white/70 mb-4">
+                    Descubre cómo los agentes de IA pueden trabajar 24/7 automatizando tareas repetitivas y mejorando tu eficiencia.
+                </p>
+                <div class="flex items-center gap-2 text-sm text-white/60">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span>Generado con IA · 7 min lectura</span>
+                </div>
+            </article>
+            
+            <!-- Blog Post 3 -->
+            <article class="group cursor-pointer">
+                <div class="image-container mb-4">
+                    <img src="images/blog-seniors-digital.png" alt="Seniors Digital" class="w-full rounded-lg">
+                </div>
+                <span class="badge badge-orange mb-3">Mayores</span>
+                <h3 class="text-h2 mb-3 group-hover:text-teal-400 transition-colors">
+                    IA para Mayores: Tecnología que Mejora Tu Día a Día
+                </h3>
+                <p class="text-body text-white/70 mb-4">
+                    Herramientas de inteligencia artificial diseñadas para facilitar la vida cotidiana de personas mayores de 55 años.
+                </p>
+                <div class="flex items-center gap-2 text-sm text-white/60">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span>Generado con IA · 4 min lectura</span>
+                </div>
+            </article>
+        </div>
+        
+        <div class="text-center">
+            <a href="#" class="btn-secondary">Ver Todos los Artículos</a>
+        </div>
+    </section>
+    
+    <!-- CTA Final -->
+    <section class="gradient-brand">
+        <div class="section text-center">
+            <h2 class="text-display mb-6">¿Listo para Simplificar Tu Trabajo?</h2>
+            <p class="text-h2 text-white/90 mb-4 max-w-2xl mx-auto">
+                Primera consulta totalmente gratuita
+            </p>
+            <p class="text-body-lg text-white/80 mb-12">
+                Sin compromiso. Hablamos, analizamos tu caso y te proponemos soluciones.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <a href="#" class="btn-primary" style="background: white; color: var(--brand-blue);">
+                    Agendar Consulta Gratis
+                </a>
+                <a href="#servicios" class="btn-secondary">
+                    Ver Todos los Servicios
+                </a>
+            </div>
+            
+            <p class="text-body text-white/80 flex items-center justify-center gap-2">
+                <i data-lucide="map-pin" class="w-5 h-5"></i>
+                Operamos en Catalunya, con base en Girona
+            </p>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer style="background: var(--bg-primary); border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        <div class="section">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <!-- Column 1: XpertAuth -->
+                <div>
+                    <img src="images/Logo_XpertAuth_2.png" alt="XpertAuth" class="h-10 mb-4">
+                    <p class="text-body text-white/70 mb-4">
+                        Tecnología para la Comunidad
+                    </p>
+                    <div class="flex items-center gap-2 text-sm text-white/60 mb-2">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        <span>Asociación sin ánimo de lucro</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-white/60 mb-2">
+                        <i data-lucide="briefcase" class="w-4 h-4"></i>
+                        <span>Cargos no remunerados</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-white/60">
+                        <i data-lucide="heart" class="w-4 h-4"></i>
+                        <span>Excedentes para mayores</span>
+                    </div>
+                </div>
+                
+                <!-- Column 2: Servicios -->
+                <div>
+                    <h4 class="text-body-lg font-bold mb-4">Servicios</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Transporte Especial</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">IA a Tu Medida</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Formación Mayores</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Consultoría</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 3: Recursos -->
+                <div>
+                    <h4 class="text-body-lg font-bold mb-4">Recursos</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Sobre Nosotros</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Hazte Socio</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Column 4: Legal -->
+                <div>
+                    <h4 class="text-body-lg font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Privacidad</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Términos</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Cookies</a></li>
+                        <li><a href="#" class="text-body text-white/70 hover:text-white transition-colors">Estatutos</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-sm text-white/60">
+                        © 2026 XpertAuth - Asociación sin ánimo de lucro
+                    </div>
+                    
+                    <div class="flex items-center gap-6">
+                        <a href="mailto:info@xpertauth.com" class="text-sm text-white/70 hover:text-white transition-colors flex items-center gap-2">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            info@xpertauth.com
+                        </a>
+                        <a href="tel:+34625897546" class="text-sm text-white/70 hover:text-white transition-colors flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                            +34 625 897 546
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <p class="text-sm text-white/60 flex items-center justify-center gap-2">
+                        <i data-lucide="cpu" class="w-4 h-4"></i>
+                        Web diseñada y desarrollada con ayuda de IA
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Navbar scroll effect
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Mobile menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+        
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+            });
+        });
+        
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-up');
+                }
+            });
+        }, observerOptions);
+        
+        // Observe sections and elements
+        document.querySelectorAll('section > div > *').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Form submission
+        const founderForm = document.getElementById('founder-form');
+        founderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = founderForm.querySelector('input[type="email"]').value;
+            alert(`¡Gracias! Te has registrado como socio fundador con el email: ${email}\n\nTe contactaremos pronto con más información.`);
+            founderForm.reset();
+        });
+        
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 70;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

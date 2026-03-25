@@ -250,6 +250,59 @@ function navigateTo(viewName) {
 async function cargarDatos() {
   await cargarRazas();
   await cargarPropietariosSelect();
+  await cargarPacientesSelect();
+}
+
+async function cargarPacientesSelect() {
+  if (!currentUser) return;
+  const { data } = await sb.from('pacientes')
+    .select('id, nombre, raza, especie')
+    .eq('veterinario_id', currentUser.id)
+    .order('nombre');
+  const sel = document.getElementById('pacienteExistenteId');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Nueva consulta para paciente existente —</option>';
+  if (data) {
+    data.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.nombre} (${p.raza || p.especie || '—'})`;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+async function mostrarHistorialPaciente(pacienteId, nombrePaciente) {
+  const { data } = await sb.from('consultas')
+    .select('id, fecha_consulta, motivo_consulta, clasificacion_isachc, soplo, impresion_diagnostica')
+    .eq('paciente_id', pacienteId)
+    .order('fecha_consulta', { ascending: false });
+
+  const container = document.getElementById('historialPacienteContainer');
+  const titulo    = document.getElementById('historialPacienteTitulo');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.classList.add('hidden');
+    return;
+  }
+
+  titulo.textContent = `Historial de ${nombrePaciente} (${data.length} consulta${data.length > 1 ? 's' : ''})`;
+  container.innerHTML = `
+    <table class="data-table" style="font-size:0.82rem; margin-top:0.5rem;">
+      <thead><tr><th>Fecha</th><th>Motivo</th><th>ISACHC</th><th>Soplo</th><th>Impresión</th></tr></thead>
+      <tbody>
+        ${data.map(c => `<tr>
+          <td>${new Date(c.fecha_consulta).toLocaleDateString()}</td>
+          <td>${c.motivo_consulta || '—'}</td>
+          <td>${c.clasificacion_isachc || '—'}</td>
+          <td>${c.soplo > 0 ? `${c.soplo}/VI` : 'No'}</td>
+          <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.impresion_diagnostica || '—'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+  container.classList.remove('hidden');
+  document.getElementById('historialPacienteWrapper').classList.remove('hidden');
 }
 
 async function cargarRazas() {
@@ -319,6 +372,39 @@ window.nextStep = function(step) {
 // FORM BINDING
 // ============================================================
 function bindForm() {
+
+  // Selector de paciente existente — carga datos automáticamente
+  document.getElementById('pacienteExistenteId')?.addEventListener('change', async (e) => {
+    const id = e.target.value;
+    if (!id) return;
+    const { data: pac } = await sb.from('pacientes')
+      .select('*, propietarios(*)')
+      .eq('id', id).single();
+    if (!pac) return;
+
+    // Rellenar campos del paciente
+    document.getElementById('numHistoria').value    = pac.num_historia || '';
+    document.getElementById('nombrePaciente').value = pac.nombre || '';
+    document.getElementById('especie').value        = pac.especie || 'Canino';
+    document.getElementById('raza').value           = pac.raza || '';
+    document.getElementById('peso').value           = pac.peso || '';
+    document.getElementById('edad').value           = pac.edad_anios || '';
+    document.getElementById('sexo').value           = pac.sexo || '';
+    document.getElementById('microchip').value      = pac.microchip || '';
+    document.getElementById('alergias').value       = pac.alergias || '';
+
+    // Seleccionar propietario vinculado
+    if (pac.propietario_id) {
+      document.getElementById('propietarioId').value = pac.propietario_id;
+    }
+
+    // Mostrar historial del paciente
+    mostrarHistorialPaciente(pac.id, pac.nombre);
+
+    // Guardar ID para vinculación
+    document.getElementById('pacienteExistenteId').dataset.pacienteId = pac.id;
+  });
+
   // Nuevo propietario toggle
   document.getElementById('btnNuevoPropietario').addEventListener('click', () => {
     const form = document.getElementById('nuevoPropietarioForm');
@@ -813,8 +899,19 @@ function renderizarInforme(estado, calcs, diag, textoIA, lang, tipo) {
         <ul style="padding-left:1.5rem; margin-top:0.5rem;">
           ${diag.diagnosticos.map(d => `<li>${d}</li>`).join('')}
         </ul>
+        ${con.grado_sospecha ? `<p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">${t('lbl_grado_sospecha') || 'Grado de sospecha'}: <strong>${con.grado_sospecha}</strong></p>` : ''}
+        ${con.diag_diferencial ? `<p style="margin-top:0.5rem; font-size:0.85rem;">${t('lbl_diag_dif') || 'Diagnóstico diferencial'}: ${con.diag_diferencial}</p>` : ''}
       </div>
     </div>
+
+    ${con.pruebas || con.tratamiento ? `
+    <div class="report-section">
+      <div class="report-section-title">${t('sec_plan') || 'PLAN'}</div>
+      <div contenteditable="true" class="report-editable" style="padding:0.5rem 0;">
+        ${con.pruebas ? `<p><strong>${t('lbl_pruebas') || 'Pruebas complementarias'}:</strong> ${con.pruebas}</p>` : ''}
+        ${con.tratamiento ? `<p style="margin-top:0.5rem;"><strong>${t('lbl_tratamiento') || 'Tratamiento'}:</strong> ${con.tratamiento}</p>` : ''}
+      </div>
+    </div>` : ''}
 
     <div class="report-section">
       <div class="report-section-title">${t('sec_recomendaciones')} <span class="no-print" style="font-size:0.7rem; color:var(--primary); font-weight:400;">${t('editable_hint')}</span></div>

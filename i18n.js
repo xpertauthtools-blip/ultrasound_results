@@ -54,7 +54,11 @@ const I18N = {
     lbl_instrucciones: "Instrucciones",
     lbl_inicio: "Inicio",
     lbl_fin: "Fin",
-    lbl_revision: "Próxima revisión",
+    tbl_param: "Parámetro", tbl_val: "Valor", tbl_ref: "Referencia", tbl_val_inter: "Valoración",
+    txt_normal: "Normal", txt_reducida: "Reducida", txt_elevado: "Elevado",
+    txt_dilatacion: "Dilatado", txt_dilat_auric: "Aumentado", txt_estenosis: "Estenosis",
+    txt_precaucion: "Precaución", txt_alometrico: "Alométrico",
+    p_tei: "Índice Tei", p_gradao: "Grad. Ao",
     // Diagnósticos automáticos
     diag_ok: "Parámetros ecocardiográficos dentro de la normalidad para la especie y tamaño.",
     diag_mmvd_b1: "Hallazgos compatibles con Enfermedad Mixomatosa de la Válvula Mitral (MMVD) — Estadio B1.",

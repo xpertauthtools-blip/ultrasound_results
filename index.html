@@ -82,7 +82,7 @@
     </div>
 
     <nav class="sidebar-nav">
-      <button class="nav-item active" data-view="nueva-consulta">
+      <button class="nav-item active" data-view="nueva-consulta" id="btnNuevaConsulta">
         <span class="nav-icon">＋</span>
         <span>Nueva consulta</span>
       </button>
@@ -119,15 +119,7 @@
     <header class="top-bar">
       <button class="menu-toggle" id="menuToggle">☰</button>
       <div class="top-bar-title" id="topBarTitle">Nueva Consulta</div>
-      <div class="top-bar-actions">
-        <select id="langSelector" class="lang-select">
-          <option value="es">🇪🇸 ES</option>
-          <option value="en">🇬🇧 EN</option>
-          <option value="de">🇩🇪 DE</option>
-          <option value="cat">💛 CAT</option>
-          <option value="fr">🇫🇷 FR</option>
-        </select>
-      </div>
+      <div class="top-bar-actions"></div>
     </header>
 
     <!-- ===== VISTA: NUEVA CONSULTA (wizard de 6 pasos) ===== -->
@@ -507,8 +499,8 @@
                 <span class="measure-hint">Vel. máx. regurg. tricúsp.</span>
               </div>
               <div class="measure-item">
-                <label>e' anillo <span class="unit">cm/s</span></label>
-                <input type="number" step="0.1" id="EPrime" placeholder="—">
+                <label>e' anillo <span class="unit">m/s</span></label>
+                <input type="number" step="0.01" id="EPrime" placeholder="—">
                 <span class="measure-hint">TDI anillo mitral</span>
               </div>
               <div class="measure-item">
@@ -836,7 +828,10 @@
               <button type="button" class="btn-secondary" id="btnVolver">← Volver</button>
               <button type="button" class="btn-primary" id="btnImprimir">🖨️ Imprimir / PDF</button>
             </div>
+            <!-- Informe propietario -->
             <div id="reporteContenido" class="report-paper"></div>
+            <!-- Medicación (separada, solo visible si tipo=ambos) -->
+            <div id="reporteMedicacion" class="report-paper hidden" style="margin-top:2rem; page-break-before:always;"></div>
           </div>
 
           <div class="step-actions" id="step6Actions">

@@ -72,8 +72,9 @@ function calcularIndices() {
   if (e && a && a > 0)
     results.e_a = parseFloat((e / a).toFixed(2));
 
+  // E y e' ambos en m/s — división directa
   if (e && eprime && eprime > 0)
-    results.e_eprime = parseFloat(((e * 100) / eprime).toFixed(1));
+    results.e_eprime = parseFloat((e / eprime).toFixed(1));
 
   if (ivct && ivrt && et && et > 0)
     results.tei = parseFloat(((ivct + ivrt) / et).toFixed(3));

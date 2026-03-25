@@ -180,11 +180,15 @@ function bindNav() {
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
       const view = btn.dataset.view;
+
+      // Reset completo si es nueva consulta
+      if (view === 'nueva-consulta') {
+        resetConsulta();
+      }
+
       navigateTo(view);
       btn.closest('.sidebar-nav').querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      // Cerrar sidebar en móvil
       document.getElementById('sidebar').classList.remove('open');
     });
   });
@@ -192,6 +196,28 @@ function bindNav() {
   document.getElementById('menuToggle').addEventListener('click', () => {
     document.getElementById('sidebar').classList.toggle('open');
   });
+}
+
+function resetConsulta() {
+  // Reset formulario
+  const form = document.getElementById('consultaForm');
+  if (form) form.reset();
+
+  // Reset estado global
+  consultaGuardada = null;
+  lastCalcs = {};
+  medCount  = 0;
+
+  // Limpiar medicaciones
+  document.getElementById('medicacionesContainer').innerHTML = '';
+
+  // Ocultar informe generado
+  document.getElementById('documentoGenerado')?.classList.add('hidden');
+  document.getElementById('reporteMedicacion')?.classList.add('hidden');
+  document.getElementById('step6Actions')?.classList.remove('hidden');
+
+  // Volver al paso 1
+  nextStep(1);
 }
 
 function navigateTo(viewName) {
@@ -614,24 +640,50 @@ async function generarDocumento(conIA) {
   const lang  = document.getElementById('langImpresion').value;
   const btn   = document.getElementById('btnGenerarDoc');
   btn.disabled = true;
-  btn.textContent = t('generando');
+  btn.textContent = conIA ? t('generando') : 'Generando...';
 
-  const calcs = calcularIndices();
+  const calcs  = calcularIndices();
   const estado = consultaGuardada.estado;
-  const diag   = motorDiagnostico(estado, calcs);
 
-  let textoIA = null;
+  // Forzar idioma correcto en motor de diagnóstico
+  const diag = motorDiagnostico(estado, calcs);
+
+  // Texto libre del veterinario — si hay IA, se traduce; si no, se usa tal cual
+  let textoIA_informe   = null;
+  let textoIA_medicacion = null;
+
   if (conIA) {
     try {
-      textoIA = await llamarIA(estado, calcs, diag, lang, tipo);
+      if (tipo === 'propietario' || tipo === 'ambos') {
+        textoIA_informe = await llamarIA(estado, calcs, diag, lang, 'propietario');
+      }
+      if (tipo === 'medicacion' || tipo === 'ambos') {
+        textoIA_medicacion = await llamarIA(estado, calcs, diag, lang, 'medicacion');
+      }
     } catch (e) {
       console.error('IA error:', e);
       showToast(t('error_ia'), 'warning');
     }
   }
 
-  const html = renderizarInforme(estado, calcs, diag, textoIA, lang, tipo);
-  document.getElementById('reporteContenido').innerHTML = html;
+  // Renderizar informe principal
+  const htmlInforme = renderizarInforme(estado, calcs, diag, textoIA_informe, lang, tipo === 'ambos' ? 'propietario' : tipo);
+  document.getElementById('reporteContenido').innerHTML = htmlInforme;
+
+  // Renderizar medicación separada si tipo = ambos
+  const reporteMed = document.getElementById('reporteMedicacion');
+  if (tipo === 'ambos' && estado.medicaciones?.length > 0) {
+    const htmlMed = renderizarInforme(estado, calcs, diag, textoIA_medicacion, lang, 'medicacion');
+    reporteMed.innerHTML = htmlMed;
+    reporteMed.classList.remove('hidden');
+  } else if (tipo === 'medicacion') {
+    const htmlMed = renderizarInforme(estado, calcs, diag, textoIA_medicacion, lang, 'medicacion');
+    document.getElementById('reporteContenido').innerHTML = htmlMed;
+    reporteMed.classList.add('hidden');
+  } else {
+    reporteMed.classList.add('hidden');
+  }
+
   document.getElementById('documentoGenerado').classList.remove('hidden');
   document.getElementById('step6Actions').classList.add('hidden');
 
@@ -642,7 +694,7 @@ async function generarDocumento(conIA) {
       veterinario_id: currentUser.id,
       paciente_id: consultaGuardada.paciente?.id,
       tipo, idioma: lang,
-      contenido_html: html,
+      contenido_html: htmlInforme,
     });
   }
 
@@ -740,16 +792,16 @@ function renderizarInforme(estado, calcs, diag, textoIA, lang, tipo) {
     <div class="report-section">
       <div class="report-section-title">${t('sec_indices')}</div>
       <table class="data-table" style="font-size:0.85rem;">
-        <thead><tr><th>Parámetro</th><th>Valor</th><th>Referencia</th><th>Valoración</th></tr></thead>
+        <thead><tr><th>${t('tbl_param') || 'Parámetro'}</th><th>${t('tbl_val') || 'Valor'}</th><th>${t('tbl_ref') || 'Referencia'}</th><th>${t('tbl_val_inter') || 'Valoración'}</th></tr></thead>
         <tbody>
-          ${calcs.la_ao != null ? `<tr><td>LA/Ao</td><td>${calcs.la_ao}</td><td>&lt; 1.6</td><td class="${calcs.la_ao >= 1.6 ? 'val-danger' : 'val-ok'}">${calcs.la_ao >= 1.6 ? '↑ Aumentado' : '✓ Normal'}</td></tr>` : ''}
-          ${calcs.fs != null ? `<tr><td>FS%</td><td>${calcs.fs}%</td><td>25–45%</td><td class="${calcs.fs < 25 ? 'val-danger' : 'val-ok'}">${calcs.fs < 25 ? '↓ Reducida' : '✓ Normal'}</td></tr>` : ''}
-          ${calcs.e_a != null ? `<tr><td>E/A</td><td>${calcs.e_a}</td><td>&gt; 1</td><td class="${calcs.e_a < 1 ? 'val-warn' : 'val-ok'}">${calcs.e_a < 1 ? '⚠ Precaución' : '✓ Normal'}</td></tr>` : ''}
-          ${calcs.e_eprime != null ? `<tr><td>E/e'</td><td>${calcs.e_eprime}</td><td>&lt; 15</td><td class="${calcs.e_eprime > 15 ? 'val-danger' : 'val-ok'}">${calcs.e_eprime > 15 ? '↑ Elevado' : '✓ Normal'}</td></tr>` : ''}
-          ${calcs.tei != null ? `<tr><td>Índice Tei</td><td>${calcs.tei}</td><td>&lt; 0.5</td><td class="${calcs.tei > 0.5 ? 'val-warn' : 'val-ok'}">${calcs.tei > 0.5 ? '⚠ Elevado' : '✓ Normal'}</td></tr>` : ''}
-          ${calcs.lvidd_cornell ? `<tr><td>LVIDd Cornell</td><td>${calcs.lvidd_cornell.medido}/${calcs.lvidd_cornell.esperado} cm</td><td>Alométrico</td><td class="${calcs.lvidd_cornell.dilatado ? 'val-danger' : 'val-ok'}">${calcs.lvidd_cornell.dilatado ? '↑ Dilatado' : '✓ Normal'}</td></tr>` : ''}
-          ${calcs.paps != null ? `<tr><td>PAPs</td><td>${calcs.paps} mmHg</td><td>&lt; 30 mmHg</td><td class="${calcs.paps > 30 ? 'val-danger' : 'val-ok'}">${calcs.paps > 30 ? '↑ Elevada' : '✓ Normal'}</td></tr>` : ''}
-          ${calcs.grad_ao != null ? `<tr><td>Grad. Ao</td><td>${calcs.grad_ao} mmHg</td><td>&lt; 20 mmHg</td><td class="${calcs.grad_ao > 50 ? 'val-danger' : 'val-ok'}">${calcs.grad_ao > 50 ? '↑ Estenosis' : '✓ Normal'}</td></tr>` : ''}
+          ${calcs.la_ao != null ? `<tr><td>LA/Ao</td><td>${calcs.la_ao}</td><td>&lt; ${diag.especie === 'felino' ? '1.5' : '1.6'}</td><td class="${calcs.la_ao >= (diag.especie === 'felino' ? 1.5 : 1.6) ? 'val-danger' : 'val-ok'}">${calcs.la_ao >= (diag.especie === 'felino' ? 1.5 : 1.6) ? '↑ ' + (t('txt_dilat_auric') || 'Aumentado') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
+          ${calcs.fs != null ? `<tr><td>FS%</td><td>${calcs.fs}%</td><td>${diag.especie === 'felino' ? '35–65%' : '25–45%'}</td><td class="${calcs.fs < (diag.especie === 'felino' ? 35 : 25) ? 'val-danger' : 'val-ok'}">${calcs.fs < (diag.especie === 'felino' ? 35 : 25) ? '↓ ' + (t('txt_reducida') || 'Reducida') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
+          ${calcs.e_a != null ? `<tr><td>E/A</td><td>${calcs.e_a}</td><td>&gt; 1</td><td class="${calcs.e_a < 1 ? 'val-warn' : 'val-ok'}">${calcs.e_a < 1 ? '⚠ ' + (t('txt_precaucion') || 'Precaución') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
+          ${calcs.e_eprime != null ? `<tr><td>E/e'</td><td>${calcs.e_eprime}</td><td>&lt; ${diag.especie === 'felino' ? '12' : '15'}</td><td class="${calcs.e_eprime > (diag.especie === 'felino' ? 12 : 15) ? 'val-danger' : 'val-ok'}">${calcs.e_eprime > (diag.especie === 'felino' ? 12 : 15) ? '↑ ' + (t('txt_elevado') || 'Elevado') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
+          ${calcs.tei != null ? `<tr><td>${t('p_tei') || 'Índice Tei'}</td><td>${calcs.tei}</td><td>&lt; ${diag.especie === 'felino' ? '0.45' : '0.50'}</td><td class="${calcs.tei > (diag.especie === 'felino' ? 0.45 : 0.50) ? 'val-warn' : 'val-ok'}">${calcs.tei > (diag.especie === 'felino' ? 0.45 : 0.50) ? '⚠ ' + (t('txt_elevado') || 'Elevado') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
+          ${calcs.lvidd_ref ? `<tr><td>${diag.especie === 'felino' ? 'LVIDd' : 'LVIDd Cornell'}</td><td>${calcs.lvidd_ref.label}</td><td>${diag.especie === 'felino' ? '12–18 mm' : t('txt_alometrico') || 'Alométrico'}</td><td class="${calcs.lvidd_ref.dilatado ? 'val-danger' : 'val-ok'}">${calcs.lvidd_ref.dilatado ? '↑ ' + (t('txt_dilatacion') || 'Dilatado') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
+          ${calcs.paps != null ? `<tr><td>PAPs</td><td>${calcs.paps} mmHg</td><td>&lt; 30 mmHg</td><td class="${calcs.paps > 30 ? 'val-danger' : 'val-ok'}">${calcs.paps > 30 ? '↑ ' + (t('txt_elevado') || 'Elevada') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
+          ${calcs.grad_ao != null ? `<tr><td>${t('p_gradao') || 'Grad. Ao'}</td><td>${calcs.grad_ao} mmHg</td><td>&lt; 20 mmHg</td><td class="${calcs.grad_ao > 50 ? 'val-danger' : 'val-ok'}">${calcs.grad_ao > 50 ? '↑ ' + (t('txt_estenosis') || 'Estenosis') : '✓ ' + (t('txt_normal') || 'Normal')}</td></tr>` : ''}
         </tbody>
       </table>
     </div>

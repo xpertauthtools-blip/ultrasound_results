@@ -1033,14 +1033,17 @@ table.data-table tr:hover td { background: var(--bg); }
    ============================================================ */
 @media print {
   .sidebar, .top-bar, .steps-bar, .step-actions,
-  .no-print, .doc-actions { display: none !important; }
+  .no-print, .doc-actions, #panel-6 > .card,
+  #step6Actions { display: none !important; }
   .main-content { margin-left: 0; }
   .report-paper {
     border: none;
     box-shadow: none;
     padding: 0;
     max-width: 100%;
+    margin: 0;
   }
   body { background: white; font-size: 11pt; }
   .report-editable:focus { background: white; box-shadow: none; }
+  #documentoGenerado { margin-top: 0 !important; }
 }

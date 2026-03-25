@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CardioVet — Asistente Ecocardiográfico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ===================== PANTALLA LOGIN ===================== -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-bg-shape"></div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-mark">♥</div>
+      <div>
+        <h1 class="logo-name">CardioVet</h1>
+        <p class="logo-sub">Asistente Ecocardiográfico</p>
+      </div>
+    </div>
+
+    <div id="authNotice" class="auth-notice hidden"></div>
+
+    <!-- Login -->
+    <div id="loginView">
+      <h2 class="auth-title">Acceso clínico</h2>
+      <div class="field-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="veterinario@clinica.com">
+      </div>
+      <div class="field-group">
+        <label>Contraseña</label>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </div>
+      <button class="btn-primary full-width" id="btnLogin">Iniciar sesión</button>
+      <p class="auth-switch">¿Primera vez? <span id="btnShowRegister">Crear cuenta</span></p>
+    </div>
+
+    <!-- Registro -->
+    <div id="registerView" class="hidden">
+      <h2 class="auth-title">Nueva cuenta</h2>
+      <div class="grid-2">
+        <div class="field-group">
+          <label>Nombre completo</label>
+          <input type="text" id="regNombre" placeholder="Dr. García López">
+        </div>
+        <div class="field-group">
+          <label>Nº Colegiado</label>
+          <input type="text" id="regColegiado" placeholder="12345">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Clínica / Hospital</label>
+        <input type="text" id="regClinica" placeholder="Clínica Veterinaria...">
+      </div>
+      <div class="field-group">
+        <label>Email corporativo</label>
+        <input type="email" id="regEmail" placeholder="veterinario@clinica.com">
+      </div>
+      <div class="field-group">
+        <label>Contraseña (mín. 6 caracteres)</label>
+        <input type="password" id="regPassword" placeholder="••••••••">
+      </div>
+      <button class="btn-primary full-width" id="btnRegister">Crear cuenta</button>
+      <p class="auth-switch">¿Ya tienes cuenta? <span id="btnShowLogin">Entrar</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP PRINCIPAL ===================== -->
+<div id="mainApp" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark-sm">♥</div>
+      <span class="sidebar-title">CardioVet</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="nueva-consulta">
+        <span class="nav-icon">＋</span>
+        <span>Nueva consulta</span>
+      </button>
+      <button class="nav-item" data-view="pacientes">
+        <span class="nav-icon">🐾</span>
+        <span>Pacientes</span>
+      </button>
+      <button class="nav-item" data-view="historial">
+        <span class="nav-icon">📋</span>
+        <span>Historial</span>
+      </button>
+      <button class="nav-item" data-view="propietarios">
+        <span class="nav-icon">👤</span>
+        <span>Propietarios</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="vet-info" id="vetInfo">
+        <div class="vet-avatar" id="vetAvatar">V</div>
+        <div>
+          <p class="vet-name" id="vetName">Veterinario</p>
+          <p class="vet-clinic" id="vetClinic">Clínica</p>
+        </div>
+      </div>
+      <button class="btn-logout" id="btnLogout">Salir</button>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="top-bar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="top-bar-title" id="topBarTitle">Nueva Consulta</div>
+      <div class="top-bar-actions">
+        <select id="langSelector" class="lang-select">
+          <option value="es">🇪🇸 ES</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="de">🇩🇪 DE</option>
+          <option value="cat">💛 CAT</option>
+          <option value="fr">🇫🇷 FR</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- ===== VISTA: NUEVA CONSULTA (wizard de 6 pasos) ===== -->
+    <div id="view-nueva-consulta" class="view active">
+
+      <!-- Steps indicator -->
+      <div class="steps-bar">
+        <div class="step active" data-step="1">
+          <div class="step-num">1</div>
+          <span>Paciente</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <div class="step-num">2</div>
+          <span>Exploración</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <div class="step-num">3</div>
+          <span>Medidas</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="4">
+          <div class="step-num">4</div>
+          <span>Hallazgos</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="5">
+          <div class="step-num">5</div>
+          <span>Conclusión</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="6">
+          <div class="step-num">6</div>
+          <span>Informe</span>
+        </div>
+      </div>
+
+      <form id="consultaForm">
+
+        <!-- PASO 1: DATOS DEL PACIENTE -->
+        <div class="step-panel active" id="panel-1">
+          <div class="panel-header">
+            <h2>🐾 Datos del Paciente</h2>
+            <p>Información clínica básica del animal</p>
+          </div>
+
+          <div class="card">
+            <h3 class="card-section-title">Identificación</h3>
+            <div class="grid-3">
+              <div class="field-group">
+                <label>Nº Historia / ID Clínico</label>
+                <input type="text" id="numHistoria" placeholder="ECO-2024-001">
+              </div>
+              <div class="field-group">
+                <label>Nombre del paciente <span class="req">*</span></label>
+                <input type="text" id="nombrePaciente" required placeholder="Toby">
+              </div>
+              <div class="field-group">
+                <label>Microchip</label>
+                <input type="text" id="microchip" placeholder="985...">
+              </div>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Datos clínicos</h3>
+            <div class="grid-3">
+              <div class="field-group">
+                <label>Especie</label>
+                <select id="especie">
+                  <option value="Canino" selected>Canino</option>
+                  <option value="Felino">Felino</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Raza <span class="req">*</span></label>
+                <input type="text" id="raza" list="razaList" placeholder="Escribir o seleccionar..." required>
+                <datalist id="razaList"></datalist>
+              </div>
+              <div class="field-group">
+                <label>Peso (kg) <span class="req">*</span></label>
+                <input type="number" id="peso" step="0.1" min="0.1" required placeholder="0.0">
+              </div>
+              <div class="field-group">
+                <label>Fecha de nacimiento</label>
+                <input type="date" id="fechaNacimiento">
+              </div>
+              <div class="field-group">
+                <label>Edad (años)</label>
+                <input type="number" id="edad" step="0.5" min="0" placeholder="0.0">
+              </div>
+              <div class="field-group">
+                <label>Sexo <span class="req">*</span></label>
+                <select id="sexo" required>
+                  <option value="" disabled selected>Seleccionar...</option>
+                  <option value="M">Macho entero</option>
+                  <option value="MC">Macho castrado</option>
+                  <option value="H">Hembra entera</option>
+                  <option value="HC">Hembra esterilizada</option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Propietario</h3>
+            <div class="grid-2">
+              <div class="field-group">
+                <label>Propietario</label>
+                <select id="propietarioId">
+                  <option value="">— Seleccionar existente —</option>
+                </select>
+              </div>
+              <div class="field-group" style="display:flex;align-items:flex-end;">
+                <button type="button" class="btn-secondary" id="btnNuevoPropietario">＋ Nuevo propietario</button>
+              </div>
+            </div>
+
+            <!-- Formulario nuevo propietario (oculto) -->
+            <div id="nuevoPropietarioForm" class="hidden sub-card">
+              <h4>Nuevo propietario</h4>
+              <div class="grid-3">
+                <div class="field-group">
+                  <label>Nombre</label>
+                  <input type="text" id="propNombre" placeholder="Juan">
+                </div>
+                <div class="field-group">
+                  <label>Apellidos</label>
+                  <input type="text" id="propApellidos" placeholder="García López">
+                </div>
+                <div class="field-group">
+                  <label>Teléfono</label>
+                  <input type="tel" id="propTelefono" placeholder="+34 600...">
+                </div>
+                <div class="field-group">
+                  <label>Email</label>
+                  <input type="email" id="propEmail" placeholder="email@ejemplo.com">
+                </div>
+                <div class="field-group">
+                  <label>Dirección</label>
+                  <input type="text" id="propDireccion" placeholder="Calle...">
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group" style="margin-top:1rem">
+              <label>Alergias / contraindicaciones conocidas</label>
+              <input type="text" id="alergias" placeholder="Ej: alergia a sulfonamidas...">
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <div></div>
+            <button type="button" class="btn-primary" onclick="nextStep(2)">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- PASO 2: EXPLORACIÓN CLÍNICA -->
+        <div class="step-panel hidden" id="panel-2">
+          <div class="panel-header">
+            <h2>🩺 Exploración Clínica</h2>
+            <p>Impresión inicial y signos clínicos</p>
+          </div>
+
+          <div class="card">
+            <h3 class="card-section-title">Motivo y síntomas</h3>
+            <div class="grid-2">
+              <div class="field-group">
+                <label>Motivo de consulta</label>
+                <input type="text" id="motivoConsulta" placeholder="Control cardiológico, soplo detectado...">
+              </div>
+              <div class="field-group">
+                <label>Síntomas / signos clínicos</label>
+                <input type="text" id="sintomas" placeholder="Tos, intolerancia al ejercicio...">
+              </div>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Exploración cardiorrespiratoria</h3>
+            <div class="grid-3">
+              <div class="field-group">
+                <label>Soplo</label>
+                <select id="soplo">
+                  <option value="0">No detectado</option>
+                  <option value="1">Grado I/VI</option>
+                  <option value="2">Grado II/VI</option>
+                  <option value="3">Grado III/VI</option>
+                  <option value="4">Grado IV/VI</option>
+                  <option value="5">Grado V/VI</option>
+                  <option value="6">Grado VI/VI</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Localización del soplo</label>
+                <select id="localizacionSoplo">
+                  <option value="">No aplica</option>
+                  <option value="apical_izq">Apical izquierdo</option>
+                  <option value="base_izq">Base izquierda</option>
+                  <option value="tricuspide">Tricúspide (derecho)</option>
+                  <option value="difuso">Difuso</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Frecuencia cardíaca (lpm)</label>
+                <input type="number" id="frecuenciaCardiaca" placeholder="80">
+              </div>
+              <div class="field-group">
+                <label>Ritmo cardíaco</label>
+                <select id="ritmo">
+                  <option value="regular">Regular</option>
+                  <option value="irregular">Irregular</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Frecuencia respiratoria (rpm)</label>
+                <input type="number" id="frecuenciaRespiratoria" placeholder="20">
+              </div>
+              <div class="field-group">
+                <label>SpO₂ (%)</label>
+                <input type="number" id="spo2" step="0.1" min="0" max="100" placeholder="98">
+              </div>
+              <div class="field-group">
+                <label>Mucosas / perfusión</label>
+                <input type="text" id="mucosas" placeholder="Rosa, TRC < 2s">
+              </div>
+              <div class="field-group">
+                <label>Pulso femoral</label>
+                <input type="text" id="pulsofemoral" placeholder="Fuerte y simétrico">
+              </div>
+              <div class="field-group">
+                <label>Presión arterial</label>
+                <input type="text" id="presionArterial" placeholder="120/80 mmHg">
+              </div>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Clasificación funcional</h3>
+            <div class="grid-2">
+              <div class="field-group">
+                <label>Clasificación ISACHC</label>
+                <select id="isachc">
+                  <option value="">No clasificado</option>
+                  <option value="Ia">Ia — Asintomático, sin cardiomegalia</option>
+                  <option value="Ib">Ib — Asintomático, con cardiomegalia</option>
+                  <option value="IIa">IIa — Síntomas leves en reposo/ejercicio</option>
+                  <option value="IIb">IIb — Síntomas moderados</option>
+                  <option value="III">III — Síntomas graves en reposo</option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Signos clínicos</h3>
+            <div class="checks-grid">
+              <label class="check-item">
+                <input type="checkbox" id="sincope">
+                <span class="check-box"></span>
+                <span>Síncope</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="tos">
+                <span class="check-box"></span>
+                <span>Tos</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="intoleranciaEjercicio">
+                <span class="check-box"></span>
+                <span>Intolerancia al ejercicio</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="disnea">
+                <span class="check-box"></span>
+                <span>Disnea</span>
+              </label>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Historial</h3>
+            <div class="grid-2">
+              <div class="field-group">
+                <label>Antecedentes</label>
+                <textarea id="antecedentes" rows="2" placeholder="Patologías previas, cirugías..."></textarea>
+              </div>
+              <div class="field-group">
+                <label>Medicación actual</label>
+                <textarea id="medicacionActual" rows="2" placeholder="Pimobendan, Furosemida..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn-secondary" onclick="nextStep(1)">← Anterior</button>
+            <button type="button" class="btn-primary" onclick="nextStep(3)">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- PASO 3: MEDIDAS ECOCARDIOGRÁFICAS -->
+        <div class="step-panel hidden" id="panel-3">
+          <div class="panel-header">
+            <h2>📏 Medidas Ecocardiográficas</h2>
+            <p>Valores obtenidos del ecógrafo</p>
+          </div>
+
+          <div class="card">
+            <h3 class="card-section-title">Modo M — Dimensiones (mm)</h3>
+            <div class="measures-grid">
+              <div class="measure-item">
+                <label>LVIDd <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="LVIDd" placeholder="—">
+                <span class="measure-hint">Diám. VI diástole</span>
+              </div>
+              <div class="measure-item">
+                <label>LVIDs <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="LVIDs" placeholder="—">
+                <span class="measure-hint">Diám. VI sístole</span>
+              </div>
+              <div class="measure-item">
+                <label>IVSd <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="IVSd" placeholder="—">
+                <span class="measure-hint">Septo IV diástole</span>
+              </div>
+              <div class="measure-item">
+                <label>IVSs <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="IVSs" placeholder="—">
+                <span class="measure-hint">Septo IV sístole</span>
+              </div>
+              <div class="measure-item">
+                <label>LVPWd <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="LVPWd" placeholder="—">
+                <span class="measure-hint">Pared post. diástole</span>
+              </div>
+              <div class="measure-item">
+                <label>LVPWs <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="LVPWs" placeholder="—">
+                <span class="measure-hint">Pared post. sístole</span>
+              </div>
+              <div class="measure-item">
+                <label>LA <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="LA" placeholder="—">
+                <span class="measure-hint">Aurícula izquierda</span>
+              </div>
+              <div class="measure-item">
+                <label>Ao <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="Ao" placeholder="—">
+                <span class="measure-hint">Aorta</span>
+              </div>
+              <div class="measure-item">
+                <label>EPSS <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="EPSS" placeholder="—">
+                <span class="measure-hint">Separación E-septo</span>
+              </div>
+              <div class="measure-item">
+                <label>RVIDd <span class="unit">mm</span></label>
+                <input type="number" step="0.1" id="RVIDd" placeholder="—">
+                <span class="measure-hint">Diám. VD diástole</span>
+              </div>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:2rem">Doppler espectral</h3>
+            <div class="measures-grid">
+              <div class="measure-item">
+                <label>Vmax Ao <span class="unit">m/s</span></label>
+                <input type="number" step="0.01" id="VmaxAo" placeholder="—">
+                <span class="measure-hint">Vel. máx. aórtica</span>
+              </div>
+              <div class="measure-item">
+                <label>Vmax Pul <span class="unit">m/s</span></label>
+                <input type="number" step="0.01" id="VmaxPul" placeholder="—">
+                <span class="measure-hint">Vel. máx. pulmonar</span>
+              </div>
+              <div class="measure-item">
+                <label>Onda E <span class="unit">m/s</span></label>
+                <input type="number" step="0.01" id="EMitral" placeholder="—">
+                <span class="measure-hint">Onda E mitral</span>
+              </div>
+              <div class="measure-item">
+                <label>Onda A <span class="unit">m/s</span></label>
+                <input type="number" step="0.01" id="AMitral" placeholder="—">
+                <span class="measure-hint">Onda A mitral</span>
+              </div>
+              <div class="measure-item">
+                <label>Vmax RT <span class="unit">m/s</span></label>
+                <input type="number" step="0.01" id="VmaxRT" placeholder="—">
+                <span class="measure-hint">Vel. máx. regurg. tricúsp.</span>
+              </div>
+              <div class="measure-item">
+                <label>e' anillo <span class="unit">cm/s</span></label>
+                <input type="number" step="0.1" id="EPrime" placeholder="—">
+                <span class="measure-hint">TDI anillo mitral</span>
+              </div>
+              <div class="measure-item">
+                <label>IVCT <span class="unit">ms</span></label>
+                <input type="number" id="IVCT" placeholder="—">
+                <span class="measure-hint">T. contrac. isovolum.</span>
+              </div>
+              <div class="measure-item">
+                <label>IVRT <span class="unit">ms</span></label>
+                <input type="number" id="IVRT" placeholder="—">
+                <span class="measure-hint">T. relajac. isovolum.</span>
+              </div>
+              <div class="measure-item">
+                <label>ET <span class="unit">ms</span></label>
+                <input type="number" id="ET" placeholder="—">
+                <span class="measure-hint">Tiempo de eyección</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn-secondary" onclick="nextStep(2)">← Anterior</button>
+            <button type="button" class="btn-primary" onclick="nextStep(4)">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- PASO 4: HALLAZGOS CUALITATIVOS -->
+        <div class="step-panel hidden" id="panel-4">
+          <div class="panel-header">
+            <h2>🔍 Hallazgos Cualitativos</h2>
+            <p>Interpretación ecográfica observacional</p>
+          </div>
+
+          <div class="card">
+            <h3 class="card-section-title">Válvula mitral</h3>
+            <div class="grid-3">
+              <div class="field-group">
+                <label>Engrosamiento mitral</label>
+                <select id="engrosamientoMitral">
+                  <option value="0">No</option>
+                  <option value="leve">Leve</option>
+                  <option value="moderado">Moderado</option>
+                  <option value="severo">Severo</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Jet de regurgitación mitral</label>
+                <select id="jetRM">
+                  <option value="0">Ausente</option>
+                  <option value="pequeno">Pequeño</option>
+                  <option value="moderado">Moderado</option>
+                  <option value="amplio">Amplio</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Jet regurg. tricúspide</label>
+                <select id="jetTricuspide">
+                  <option value="0">Ausente</option>
+                  <option value="pequeno">Pequeño</option>
+                  <option value="moderado">Moderado</option>
+                  <option value="amplio">Amplio</option>
+                </select>
+              </div>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Otros hallazgos</h3>
+            <div class="grid-3">
+              <div class="field-group">
+                <label>Derrame pericárdico</label>
+                <select id="derrameP">
+                  <option value="0">No</option>
+                  <option value="leve">Leve</option>
+                  <option value="moderado">Moderado</option>
+                  <option value="severo">Severo</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Hipertrofia</label>
+                <select id="hipertrofia">
+                  <option value="0">No</option>
+                  <option value="concentrica">Concéntrica</option>
+                  <option value="excentrica">Excéntrica</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="checks-grid" style="margin-top:1rem">
+              <label class="check-item">
+                <input type="checkbox" id="prolapsoMitral">
+                <span class="check-box"></span>
+                <span>Prolapso mitral</span>
+              </label>
+              <label class="check-item">
+                <input type="checkbox" id="aplanamientoSeptal">
+                <span class="check-box"></span>
+                <span>Aplanamiento septal</span>
+              </label>
+            </div>
+
+            <h3 class="card-section-title" style="margin-top:1.5rem">Observaciones</h3>
+            <div class="field-group">
+              <label>Observaciones concretas</label>
+              <input type="text" id="observacionesConcr" placeholder="Hallazgos puntuales relevantes...">
+            </div>
+            <div class="field-group" style="margin-top:1rem">
+              <label>Comentario interpretativo del veterinario</label>
+              <textarea id="comentarioInterpretativo" rows="4" placeholder="Impresión cualitativa general de la exploración ecográfica..."></textarea>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn-secondary" onclick="nextStep(3)">← Anterior</button>
+            <button type="button" class="btn-primary" onclick="nextStep(5)">Siguiente →</button>
+          </div>
+        </div>
+
+        <!-- PASO 5: ÍNDICES Y CONCLUSIÓN -->
+        <div class="step-panel hidden" id="panel-5">
+          <div class="panel-header">
+            <h2>📊 Índices y Conclusión</h2>
+            <p>Cálculos automáticos y criterio clínico</p>
+          </div>
+
+          <!-- Bloque 1: Índices calculados -->
+          <div class="card">
+            <h3 class="card-section-title">Bloque 1 — Índices calculados <span class="badge-auto">Automático</span></h3>
+            <div class="indices-grid" id="indicesGrid">
+              <div class="index-box" id="idx-laao">
+                <div class="idx-name">LA/Ao</div>
+                <div class="idx-value" id="val-laao">—</div>
+                <div class="idx-ref">Normal &lt; 1.6</div>
+              </div>
+              <div class="index-box" id="idx-fs">
+                <div class="idx-name">FS%</div>
+                <div class="idx-value" id="val-fs">—</div>
+                <div class="idx-ref">Normal 25–45%</div>
+              </div>
+              <div class="index-box" id="idx-ea">
+                <div class="idx-name">E/A</div>
+                <div class="idx-value" id="val-ea">—</div>
+                <div class="idx-ref">Normal &gt; 1</div>
+              </div>
+              <div class="index-box" id="idx-eeprime">
+                <div class="idx-name">E/e'</div>
+                <div class="idx-value" id="val-eeprime">—</div>
+                <div class="idx-ref">Normal &lt; 15</div>
+              </div>
+              <div class="index-box" id="idx-tei">
+                <div class="idx-name">Índice Tei</div>
+                <div class="idx-value" id="val-tei">—</div>
+                <div class="idx-ref">Normal &lt; 0.5</div>
+              </div>
+              <div class="index-box" id="idx-lvidd">
+                <div class="idx-name">LVIDd (Cornell)</div>
+                <div class="idx-value" id="val-lvidd">—</div>
+                <div class="idx-ref">Alométrico por peso</div>
+              </div>
+              <div class="index-box" id="idx-paps">
+                <div class="idx-name">PAPs</div>
+                <div class="idx-value" id="val-paps">—</div>
+                <div class="idx-ref">Normal &lt; 30 mmHg</div>
+              </div>
+              <div class="index-box" id="idx-gradao">
+                <div class="idx-name">Grad. Ao</div>
+                <div class="idx-value" id="val-gradao">—</div>
+                <div class="idx-ref">Normal &lt; 20 mmHg</div>
+              </div>
+            </div>
+            <button type="button" class="btn-secondary" id="btnCalcular" style="margin-top:1rem">⟳ Recalcular índices</button>
+          </div>
+
+          <!-- Bloque 2: Sugerencias automáticas -->
+          <div class="card" style="margin-top:1rem">
+            <h3 class="card-section-title">Bloque 2 — Apoyo orientativo <span class="badge-auto">Automático · editable</span></h3>
+            <p class="hint-text">⚠️ Estas sugerencias son orientativas. El diagnóstico definitivo es siempre responsabilidad del veterinario.</p>
+            <div class="flags-grid" id="flagsGrid">
+              <div class="flag-item" id="flag-laao">
+                <span class="flag-dot"></span>
+                <span>Aurícula izquierda aumentada</span>
+              </div>
+              <div class="flag-item" id="flag-fs">
+                <span class="flag-dot"></span>
+                <span>Función sistólica reducida</span>
+              </div>
+              <div class="flag-item" id="flag-diastol">
+                <span class="flag-dot"></span>
+                <span>Posible alteración diastólica</span>
+              </div>
+              <div class="flag-item" id="flag-rm">
+                <span class="flag-dot"></span>
+                <span>Posible regurgitación mitral relevante</span>
+              </div>
+              <div class="flag-item" id="flag-hp">
+                <span class="flag-dot"></span>
+                <span>Posible hipertensión pulmonar</span>
+              </div>
+              <div class="flag-item" id="flag-hipert">
+                <span class="flag-dot"></span>
+                <span>Posible hipertrofia</span>
+              </div>
+              <div class="flag-item" id="flag-coherencia">
+                <span class="flag-dot"></span>
+                <span>Revisar coherencia de datos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloque 3: Conclusión del veterinario -->
+          <div class="card" style="margin-top:1rem">
+            <h3 class="card-section-title">Bloque 3 — Conclusión <span class="badge-manual">Manual</span></h3>
+            <div class="grid-2">
+              <div class="field-group">
+                <label>Impresión diagnóstica</label>
+                <textarea id="impresionDiagnostica" rows="3" placeholder="MMVD estadio B1, función sistólica conservada..."></textarea>
+              </div>
+              <div class="field-group">
+                <label>Grado de sospecha</label>
+                <select id="gradoSospecha">
+                  <option value="">—</option>
+                  <option value="alta">Alta</option>
+                  <option value="moderada">Moderada</option>
+                  <option value="baja">Baja / Hallazgo incidental</option>
+                </select>
+              </div>
+              <div class="field-group full-width">
+                <label>Diagnóstico diferencial</label>
+                <textarea id="diagDiferencial" rows="2" placeholder="Si procede..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloque 4: Plan -->
+          <div class="card" style="margin-top:1rem">
+            <h3 class="card-section-title">Bloque 4 — Plan <span class="badge-manual">Manual</span></h3>
+            <div class="grid-2">
+              <div class="field-group">
+                <label>Pruebas complementarias</label>
+                <textarea id="pruebasComplementarias" rows="2" placeholder="Radiografía torácica, Holter..."></textarea>
+              </div>
+              <div class="field-group">
+                <label>Tratamiento indicado</label>
+                <textarea id="tratamientoIndicado" rows="2" placeholder="Pimobendan 0.25mg/kg BID..."></textarea>
+              </div>
+              <div class="field-group">
+                <label>Fecha de revisión</label>
+                <input type="date" id="fechaRevision">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloque 5: Observaciones finales -->
+          <div class="card" style="margin-top:1rem">
+            <h3 class="card-section-title">Bloque 5 — Observaciones finales <span class="badge-manual">Manual</span></h3>
+            <div class="field-group">
+              <textarea id="observacionesFinales" rows="3" placeholder="Texto libre del veterinario..."></textarea>
+            </div>
+          </div>
+
+          <!-- Medicaciones -->
+          <div class="card" style="margin-top:1rem">
+            <h3 class="card-section-title">Medicaciones prescritas</h3>
+            <div id="medicacionesContainer">
+              <!-- Filas de medicación se añaden aquí -->
+            </div>
+            <button type="button" class="btn-secondary" id="btnAddMed" style="margin-top:0.75rem">＋ Añadir medicamento</button>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" class="btn-secondary" onclick="nextStep(4)">← Anterior</button>
+            <button type="button" class="btn-primary" id="btnGuardarContinuar" onclick="guardarYContinuar()">Guardar y generar informe →</button>
+          </div>
+        </div>
+
+        <!-- PASO 6: GENERACIÓN DE DOCUMENTOS -->
+        <div class="step-panel hidden" id="panel-6">
+          <div class="panel-header">
+            <h2>📄 Generación de Documentos</h2>
+            <p>Selecciona el tipo de documento a generar</p>
+          </div>
+
+          <div class="card">
+            <div class="grid-3">
+              <div class="field-group">
+                <label>Tipo de documento</label>
+                <select id="tipoDocumento">
+                  <option value="propietario">Informe para propietario</option>
+                  <option value="medicacion">Hoja de medicación</option>
+                  <option value="ambos">Ambos documentos</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Idioma del documento</label>
+                <select id="langImpresion">
+                  <option value="es">🇪🇸 Español</option>
+                  <option value="en">🇬🇧 English</option>
+                  <option value="de">🇩🇪 Deutsch</option>
+                  <option value="cat">💛 Català</option>
+                  <option value="fr">🇫🇷 Français</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>Fecha del documento</label>
+                <input type="date" id="fechaDocumento">
+              </div>
+            </div>
+
+            <div class="info-box" style="margin-top:1rem">
+              <span>🤖</span>
+              <p>Claude redactará automáticamente las explicaciones para el propietario e instrucciones de medicación en el idioma seleccionado. El texto generado es editable antes de imprimir.</p>
+            </div>
+
+            <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+              <button type="button" class="btn-primary" id="btnGenerarDoc">
+                🤖 Generar con IA
+              </button>
+              <button type="button" class="btn-secondary" id="btnGenerarSinIA">
+                Generar sin IA
+              </button>
+            </div>
+          </div>
+
+          <!-- Área de documento generado -->
+          <div id="documentoGenerado" class="hidden" style="margin-top:1.5rem">
+            <div class="doc-actions no-print">
+              <button type="button" class="btn-secondary" id="btnVolver">← Volver</button>
+              <button type="button" class="btn-primary" id="btnImprimir">🖨️ Imprimir / PDF</button>
+            </div>
+            <div id="reporteContenido" class="report-paper"></div>
+          </div>
+
+          <div class="step-actions" id="step6Actions">
+            <button type="button" class="btn-secondary" onclick="nextStep(5)">← Anterior</button>
+          </div>
+        </div>
+
+      </form>
+    </div><!-- /view-nueva-consulta -->
+
+    <!-- ===== VISTA: PACIENTES ===== -->
+    <div id="view-pacientes" class="view hidden">
+      <div class="view-header">
+        <h2>🐾 Pacientes</h2>
+        <button class="btn-primary" id="btnNuevoPaciente">＋ Nuevo paciente</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="searchPacientes" placeholder="Buscar por nombre, raza, microchip...">
+      </div>
+      <div id="listaPacientes" class="table-container">
+        <p class="empty-state">No hay pacientes registrados aún.</p>
+      </div>
+    </div>
+
+    <!-- ===== VISTA: HISTORIAL ===== -->
+    <div id="view-historial" class="view hidden">
+      <div class="view-header">
+        <h2>📋 Historial de Consultas</h2>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="searchHistorial" placeholder="Buscar por paciente, fecha...">
+      </div>
+      <div id="listaHistorial" class="table-container">
+        <p class="empty-state">No hay consultas registradas aún.</p>
+      </div>
+    </div>
+
+    <!-- ===== VISTA: PROPIETARIOS ===== -->
+    <div id="view-propietarios" class="view hidden">
+      <div class="view-header">
+        <h2>👤 Propietarios</h2>
+        <button class="btn-primary" id="btnNuevoPropietarioView">＋ Nuevo propietario</button>
+      </div>
+      <div id="listaPropietarios" class="table-container">
+        <p class="empty-state">No hay propietarios registrados aún.</p>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /mainApp -->
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Módulos -->
+<script src="i18n.js"></script>
+<script src="calculos.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

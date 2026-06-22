@@ -4,8 +4,8 @@
 // ============================================================
 // CONFIGURACIÓN
 // ============================================================
-const SUPABASE_URL      = "https://susdapyygrdtmaqflmde.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1c2RhcHl5Z3JkdG1hcWZsbWRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzIyMTQsImV4cCI6MjA4OTk0ODIxNH0.aMHIMrm4JrAnVn0243rXjHR3vakRkUyX2-3s_1TNda4";
+const SUPABASE_URL      = "https://supabase.xpertauth.com";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
